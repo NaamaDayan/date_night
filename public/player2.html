@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Player 2 – Couples Game</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    #message { font-size: 1.5rem; margin-bottom: 1rem; }
+    input, button { padding: 0.5rem 1rem; margin-right: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Player 2</h1>
+  <!-- Shows "Text 3" initially, then live state.message -->
+  <p id="message">Text 3</p>
+  <div>
+    <input id="input" type="text" placeholder="Your answer" />
+    <button id="submit">Submit</button>
+  </div>
+
+  <script type="module">
+    import { Client } from "https://cdn.jsdelivr.net/npm/@colyseus/sdk@0.17/+esm";
+
+    const el = document.getElementById("message");
+    const inputEl = document.getElementById("input");
+    const submitBtn = document.getElementById("submit");
+
+    const client = new Client("http://localhost:2567");
+
+    try {
+      const room = await client.joinOrCreate("game");
+
+      function updateMessage() {
+        if (room.state && room.state.message !== undefined) {
+          el.textContent = room.state.message;
+        }
+      }
+      updateMessage();
+      room.onStateChange(updateMessage);
+
+      // Send "submit" message to server when button is clicked
+      submitBtn.addEventListener("click", () => {
+        room.send("submit", inputEl.value || {});
+      });
+    } catch (err) {
+      el.textContent = "Could not connect. Is the server running?";
+      console.error(err);
+    }
+  </script>
+</body>
+</html>

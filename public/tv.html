@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TV – Couples Game</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    #message { font-size: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>TV Screen</h1>
+  <!-- Shows "Text 1" initially, then live state.message from server -->
+  <p id="message">Text 1</p>
+
+  <script type="module">
+    import { Client } from "https://cdn.jsdelivr.net/npm/@colyseus/sdk@0.17/+esm";
+
+    const el = document.getElementById("message");
+
+    // Connect to the Colyseus server
+    const client = new Client("http://localhost:2567");
+
+    try {
+      // Join or create the "game" room (same room as players)
+      const room = await client.joinOrCreate("game");
+
+      // Update DOM with current state (may already be "Waiting for players..." or later value)
+      function updateMessage() {
+        if (room.state && room.state.message !== undefined) {
+          el.textContent = room.state.message;
+        }
+      }
+      updateMessage();
+
+      // Listen for state changes so we update in real time when someone submits
+      room.onStateChange(updateMessage);
+    } catch (err) {
+      el.textContent = "Could not connect. Is the server running?";
+      console.error(err);
+    }
+  </script>
+</body>
+</html>
