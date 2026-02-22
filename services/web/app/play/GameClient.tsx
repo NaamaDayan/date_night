@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { GameThemeProvider } from "../game/shared/GameThemeProvider";
+import { StageSwitcher } from "../game/StageSwitcher";
+import type { SyncedGameState, QuestionnaireData, GameHistoryItem } from "../game/types";
 
 const COLYSEUS_URL =
   typeof window !== "undefined"
@@ -9,26 +12,70 @@ const COLYSEUS_URL =
 
 type Role = "player1" | "player2" | "tv";
 
+function parseState(s: Record<string, unknown>): SyncedGameState {
+  return {
+    currentStageIndex: (s.currentStageIndex as number) ?? (s.stage as number) ?? 0,
+    stage: (s.stage as number) ?? (s.currentStageIndex as number) ?? 0,
+    gameState: (s.gameState as SyncedGameState["gameState"]) ?? "WAITING_FOR_START",
+    message: (s.message as string) ?? "",
+    tvText: (s.tvText as string) ?? "",
+    player1Text: (s.player1Text as string) ?? "",
+    player2Text: (s.player2Text as string) ?? "",
+    gameStarted: (s.gameStarted as boolean) ?? false,
+    playerCount: (s.playerCount as number) ?? 0,
+    questionnaireJson: (s.questionnaireJson as string) ?? "{}",
+    stagePayloadJson: (s.stagePayloadJson as string) ?? "{}",
+    gameHistoryJson: (s.gameHistoryJson as string) ?? "[]",
+    readyForNextCount: (s.readyForNextCount as number) ?? 0,
+    player1Submitted: (s.player1Submitted as boolean) ?? false,
+    player2Submitted: (s.player2Submitted as boolean) ?? false,
+  };
+}
+
+function parseQuestionnaire(json: string): QuestionnaireData {
+  try {
+    const o = JSON.parse(json);
+    return {
+      partner1Name: o.partner1Name ?? "",
+      partner2Name: o.partner2Name ?? "",
+      howLong: o.howLong ?? "",
+      howMet: o.howMet ?? "",
+      whereMet: o.whereMet ?? "",
+    };
+  } catch {
+    return {
+      partner1Name: "",
+      partner2Name: "",
+      howLong: "",
+      howMet: "",
+      whereMet: "",
+    };
+  }
+}
+
+function parseGameHistory(json: string): GameHistoryItem[] {
+  try {
+    const arr = JSON.parse(json);
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function GameClient({
   sessionId,
   token,
   role,
+  devStage,
 }: {
   sessionId: string;
   token: string;
   role: Role;
+  devStage?: number | null;
 }) {
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState("");
-  const [state, setState] = useState<{
-    message: string;
-    tvText: string;
-    player1Text: string;
-    player2Text: string;
-    gameStarted: boolean;
-    stage: number;
-  } | null>(null);
-  const [input, setInput] = useState("");
+  const [state, setState] = useState<SyncedGameState | null>(null);
   const [room, setRoom] = useState<{ send: (type: string, data?: unknown) => void } | null>(null);
 
   useEffect(() => {
@@ -43,18 +90,18 @@ export default function GameClient({
       try {
         const { Client } = await import("@colyseus/sdk");
         const client = new Client(COLYSEUS_URL);
-        let room: Awaited<ReturnType<typeof client.joinById>> | null = null;
+        let roomInstance: Awaited<ReturnType<typeof client.joinById>> | null = null;
         try {
           const reconnectionToken = sessionStorage.getItem(
             `colyseus_reconnect_${sessionId}`
           );
           if (reconnectionToken) {
-            room = await client.reconnect(reconnectionToken);
+            roomInstance = await client.reconnect(reconnectionToken);
           }
         } catch (_) {
           sessionStorage.removeItem(`colyseus_reconnect_${sessionId}`);
         }
-        if (!room) {
+        if (!roomInstance) {
           const res = await fetch(`${COLYSEUS_URL}/join`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -66,37 +113,30 @@ export default function GameClient({
           }
           const { roomId } = await res.json();
           if (cancelled) return;
-          room = await client.joinById(roomId, { sessionId, token, role });
+          const joinOptions: Record<string, unknown> = { sessionId, token, role };
+          if (devStage != null) joinOptions.devStage = devStage;
+          roomInstance = await client.joinById(roomId, joinOptions);
         }
         if (cancelled) {
-          room.leave();
+          roomInstance.leave();
           return;
         }
-        setRoom(() => room);
-        if (room.reconnectionToken) {
+        setRoom(() => roomInstance);
+        if (roomInstance.reconnectionToken) {
           try {
             sessionStorage.setItem(
               `colyseus_reconnect_${sessionId}`,
-              room.reconnectionToken
+              roomInstance.reconnectionToken
             );
           } catch (_) {}
         }
 
         const update = () => {
-          const s = room.state as Record<string, unknown>;
-          if (s) {
-            setState({
-              message: (s.message as string) ?? "",
-              tvText: (s.tvText as string) ?? "",
-              player1Text: (s.player1Text as string) ?? "",
-              player2Text: (s.player2Text as string) ?? "",
-              gameStarted: (s.gameStarted as boolean) ?? false,
-              stage: (s.stage as number) ?? 0,
-            });
-          }
+          const s = roomInstance!.state as Record<string, unknown>;
+          if (s) setState(parseState(s));
         };
         update();
-        room.onStateChange(update);
+        roomInstance.onStateChange(update);
       } catch (e) {
         if (!cancelled) {
           const msg = e instanceof Error ? e.message : "Could not connect to game server";
@@ -113,7 +153,7 @@ export default function GameClient({
     return () => {
       cancelled = true;
     };
-  }, [mounted, sessionId, token, role]);
+  }, [mounted, sessionId, token, role, devStage]);
 
   if (error) {
     return (
@@ -123,46 +163,20 @@ export default function GameClient({
     );
   }
 
-  if (!state) return <p>Connecting to game…</p>;
+  if (!state || !room) return <p>Connecting to game…</p>;
 
-  const isTV = role === "tv";
+  const questionnaire = parseQuestionnaire(state.questionnaireJson);
+  const gameHistory = parseGameHistory(state.gameHistoryJson);
 
   return (
-    <div>
-      <h1>
-        {isTV ? "TV / Big screen" : role === "player1" ? "Player 1" : "Player 2"}
-      </h1>
-      {state.message && <p id="message">{state.message}</p>}
-      {isTV ? (
-        <p id="tv-text" style={{ fontSize: "1.5rem" }}>
-          {state.tvText}
-        </p>
-      ) : (
-        <>
-          <p id="player-text" style={{ fontSize: "1.25rem" }}>
-            {role === "player1" ? state.player1Text : state.player2Text}
-          </p>
-          <div style={{ marginTop: "1rem" }}>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Your answer"
-              style={{ padding: "0.5rem", marginRight: "0.5rem" }}
-            />
-            <button
-              type="button"
-              onClick={() => {
-                room?.send("submit", { text: input });
-                setInput("");
-              }}
-              style={{ padding: "0.5rem 1rem" }}
-            >
-              Submit
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+    <GameThemeProvider>
+      <StageSwitcher
+        state={state}
+        room={room}
+        role={role}
+        questionnaire={questionnaire}
+        gameHistory={gameHistory}
+      />
+    </GameThemeProvider>
   );
 }

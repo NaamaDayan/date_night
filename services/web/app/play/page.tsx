@@ -4,7 +4,7 @@ import GameClient from "./GameClient";
 export default function PlayPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session?: string; token?: string; role?: string }>;
+  searchParams: Promise<{ session?: string; token?: string; role?: string; devStage?: string }>;
 }) {
   return (
     <main style={{ padding: "1rem", minHeight: "100vh" }}>
@@ -18,12 +18,17 @@ export default function PlayPage({
 async function PlayWrapper({
   searchParams,
 }: {
-  searchParams: Promise<{ session?: string; token?: string; role?: string }>;
+  searchParams: Promise<{ session?: string; token?: string; role?: string; devStage?: string }>;
 }) {
   const params = await searchParams;
   const session = params.session ?? "";
   const token = params.token ?? "";
   const role = params.role ?? "";
+  const devStageParam = params.devStage;
+  const devStage =
+    devStageParam != null && devStageParam !== ""
+      ? Math.max(1, Math.min(Number(devStageParam), 99)) || undefined
+      : undefined;
 
   if (!session || !token || !role) {
     return (
@@ -44,6 +49,7 @@ async function PlayWrapper({
       sessionId={session}
       token={token}
       role={role as "player1" | "player2" | "tv"}
+      devStage={devStage}
     />
   );
 }
