@@ -1,0 +1,332 @@
+[
+  {
+    "word": "Chocolate",
+    "questions": [
+      { "question": "Is it sweet or savory?", "options": ["Sweet", "Savory", "Both", "Neither"] },
+      { "question": "When do you usually have it?", "options": ["Morning", "Afternoon", "Evening", "Anytime"] },
+      { "question": "Hot or cold?", "options": ["Hot", "Cold", "Both", "Room temp"] },
+      { "question": "Best with?", "options": ["Alone", "Milk", "Fruit", "Nuts"] }
+    ],
+    "alternatives": ["Coffee", "Cake", "Candy"]
+  },
+  {
+    "word": "Pizza",
+    "questions": [
+      { "question": "Crust preference?", "options": ["Thin", "Thick", "Stuffed", "No preference"] },
+      { "question": "Best time to eat?", "options": ["Lunch", "Dinner", "Late night", "Anytime"] },
+      { "question": "Toppings?", "options": ["Classic", "Everything", "Veggie", "Meat only"] },
+      { "question": "Slice or whole?", "options": ["Slice", "Whole", "Half", "Depends"] }
+    ],
+    "alternatives": ["Pasta", "Burger", "Sandwich"]
+  },
+  {
+    "word": "Beach",
+    "questions": [
+      { "question": "Best season?", "options": ["Summer", "Spring", "Fall", "Winter"] },
+      { "question": "Activity?", "options": ["Swim", "Sunbathe", "Walk", "All"] },
+      { "question": "Crowd preference?", "options": ["Empty", "Few people", "Lively", "Any"] },
+      { "question": "Time of day?", "options": ["Morning", "Afternoon", "Sunset", "Any"] }
+    ],
+    "alternatives": ["Mountain", "Lake", "Park"]
+  },
+  {
+    "word": "Guitar",
+    "questions": [
+      { "question": "Acoustic or electric?", "options": ["Acoustic", "Electric", "Both", "Neither"] },
+      { "question": "Play or listen?", "options": ["Play", "Listen", "Both", "Listen only"] },
+      { "question": "Genre?", "options": ["Rock", "Classical", "Folk", "Any"] },
+      { "question": "Where?", "options": ["Home", "Stage", "Campfire", "Anywhere"] }
+    ],
+    "alternatives": ["Piano", "Drums", "Violin"]
+  },
+  {
+    "word": "Rain",
+    "questions": [
+      { "question": "Feel about it?", "options": ["Love it", "Cozy", "Annoying", "Depends"] },
+      { "question": "Best activity?", "options": ["Stay in", "Walk", "Sleep", "Read"] },
+      { "question": "Sound?", "options": ["Relaxing", "Loud", "Calm", "No opinion"] },
+      { "question": "Season?", "options": ["Spring", "Summer", "Fall", "Any"] }
+    ],
+    "alternatives": ["Snow", "Sun", "Wind"]
+  },
+  {
+    "word": "Dog",
+    "questions": [
+      { "question": "Size?", "options": ["Small", "Medium", "Large", "Any"] },
+      { "question": "Energy?", "options": ["Calm", "Active", "Very active", "Any"] },
+      { "question": "Where to have?", "options": ["Apartment", "House", "Farm", "Any"] },
+      { "question": "Best for?", "options": ["Companion", "Guard", "Play", "All"] }
+    ],
+    "alternatives": ["Cat", "Bird", "Fish"]
+  },
+  {
+    "word": "Travel",
+    "questions": [
+      { "question": "How?", "options": ["Plane", "Car", "Train", "Mix"] },
+      { "question": "Alone or with others?", "options": ["Alone", "Partner", "Family", "Friends"] },
+      { "question": "Planning?", "options": ["Detailed", "Loose", "Last minute", "Mix"] },
+      { "question": "Purpose?", "options": ["Relax", "Adventure", "Culture", "All"] }
+    ],
+    "alternatives": ["Vacation", "Road trip", "Flight"]
+  },
+  {
+    "word": "Book",
+    "questions": [
+      { "question": "Format?", "options": ["Physical", "E-reader", "Audiobook", "Any"] },
+      { "question": "Genre?", "options": ["Fiction", "Non-fiction", "Both", "No preference"] },
+      { "question": "When to read?", "options": ["Morning", "Night", "Travel", "Any"] },
+      { "question": "Finish?", "options": ["Always", "Usually", "Sometimes quit", "Rarely"] }
+    ],
+    "alternatives": ["Movie", "Magazine", "Newspaper"]
+  },
+  {
+    "word": "Coffee",
+    "questions": [
+      { "question": "How do you take it?", "options": ["Black", "With milk", "Sweet", "Decaf"] },
+      { "question": "When?", "options": ["Morning only", "All day", "Afternoon", "Rarely"] },
+      { "question": "Hot or iced?", "options": ["Hot", "Iced", "Both", "Depends"] },
+      { "question": "Where?", "options": ["Home", "Cafe", "Office", "Any"] }
+    ],
+    "alternatives": ["Tea", "Hot chocolate", "Energy drink"]
+  },
+  {
+    "word": "Movie",
+    "questions": [
+      { "question": "Where to watch?", "options": ["Theater", "Home", "Both", "Either"] },
+      { "question": "Genre?", "options": ["Comedy", "Drama", "Action", "Mix"] },
+      { "question": "Snacks?", "options": ["Popcorn", "Candy", "Nothing", "Full meal"] },
+      { "question": "When?", "options": ["Weekend", "Weeknight", "Anytime", "Rarely"] }
+    ],
+    "alternatives": ["Series", "Documentary", "Cartoon"]
+  },
+  {
+    "word": "Running",
+    "questions": [
+      { "question": "Indoor or outdoor?", "options": ["Outdoor", "Treadmill", "Both", "Either"] },
+      { "question": "Time?", "options": ["Morning", "Evening", "Anytime", "Rarely"] },
+      { "question": "Alone or with others?", "options": ["Alone", "With someone", "Group", "Mix"] },
+      { "question": "Purpose?", "options": ["Fitness", "Clear head", "Both", "Other"] }
+    ],
+    "alternatives": ["Walking", "Cycling", "Swimming"]
+  },
+  {
+    "word": "Music",
+    "questions": [
+      { "question": "When?", "options": ["Morning", "Work", "Relax", "Always"] },
+      { "question": "How?", "options": ["Headphones", "Speaker", "Live", "Any"] },
+      { "question": "Discover?", "options": ["New", "Favorites", "Mix", "Recommendations"] },
+      { "question": "Mood?", "options": ["Upbeat", "Calm", "Depends", "Any"] }
+    ],
+    "alternatives": ["Podcast", "Radio", "Audiobook"]
+  },
+  {
+    "word": "Cooking",
+    "questions": [
+      { "question": "How often?", "options": ["Daily", "Few times/week", "Weekends", "Rarely"] },
+      { "question": "Style?", "options": ["Simple", "Fancy", "Experiment", "Recipes"] },
+      { "question": "With others?", "options": ["Solo", "With partner", "Family", "Either"] },
+      { "question": "Meal?", "options": ["Breakfast", "Lunch", "Dinner", "All"] }
+    ],
+    "alternatives": ["Baking", "Grilling", "Ordering"]
+  },
+  {
+    "word": "Sunset",
+    "questions": [
+      { "question": "Best place?", "options": ["Beach", "Mountains", "City", "Home"] },
+      { "question": "With?", "options": ["Alone", "Partner", "Friends", "Any"] },
+      { "question": "Season?", "options": ["Summer", "Winter", "Any", "No preference"] },
+      { "question": "Photo?", "options": ["Yes", "No", "Sometimes", "Rarely"] }
+    ],
+    "alternatives": ["Sunrise", "Night sky", "Ocean"]
+  },
+  {
+    "word": "Dance",
+    "questions": [
+      { "question": "Where?", "options": ["Home", "Club", "Class", "Any"] },
+      { "question": "With?", "options": ["Alone", "Partner", "Group", "Any"] },
+      { "question": "Style?", "options": ["Slow", "Fast", "Any", "No style"] },
+      { "question": "When?", "options": ["Parties", "Anytime", "Rarely", "Never"] }
+    ],
+    "alternatives": ["Sing", "Music", "Concert"]
+  },
+  {
+    "word": "Flowers",
+    "questions": [
+      { "question": "Receive or give?", "options": ["Receive", "Give", "Both", "Neither"] },
+      { "question": "Occasion?", "options": ["Special", "No occasion", "Both", "Rarely"] },
+      { "question": "Type?", "options": ["Roses", "Wild", "Tulips", "Any"] },
+      { "question": "Fresh or dried?", "options": ["Fresh", "Dried", "Both", "No preference"] }
+    ],
+    "alternatives": ["Plants", "Garden", "Bouquet"]
+  },
+  {
+    "word": "Photography",
+    "questions": [
+      { "question": "Subject?", "options": ["People", "Nature", "Street", "All"] },
+      { "question": "Device?", "options": ["Phone", "Camera", "Both", "Phone only"] },
+      { "question": "When?", "options": ["Travel", "Daily", "Events", "Rarely"] },
+      { "question": "Share?", "options": ["Social", "Private", "Both", "Rarely"] }
+    ],
+    "alternatives": ["Video", "Art", "Painting"]
+  },
+  {
+    "word": "Camping",
+    "questions": [
+      { "question": "Comfort?", "options": ["Tent", "RV", "Cabin", "Any"] },
+      { "question": "Where?", "options": ["Forest", "Lake", "Mountains", "Any"] },
+      { "question": "Duration?", "options": ["1 night", "Weekend", "Week", "Any"] },
+      { "question": "With?", "options": ["Solo", "Partner", "Family", "Friends"] }
+    ],
+    "alternatives": ["Hiking", "Picnic", "Road trip"]
+  },
+  {
+    "word": "Wine",
+    "questions": [
+      { "question": "Color?", "options": ["Red", "White", "Rosé", "Any"] },
+      { "question": "When?", "options": ["Dinner", "Party", "Relax", "Any"] },
+      { "question": "With?", "options": ["Alone", "Partner", "Friends", "Any"] },
+      { "question": "Knowledge?", "options": ["Expert", "Some", "Basic", "Just drink"] }
+    ],
+    "alternatives": ["Beer", "Cocktail", "Champagne"]
+  },
+  {
+    "word": "Yoga",
+    "questions": [
+      { "question": "Where?", "options": ["Home", "Studio", "Outdoor", "Any"] },
+      { "question": "Time?", "options": ["Morning", "Evening", "Anytime", "Rarely"] },
+      { "question": "Style?", "options": ["Calm", "Active", "Mix", "No preference"] },
+      { "question": "With?", "options": ["Alone", "Class", "Video", "Any"] }
+    ],
+    "alternatives": ["Meditation", "Pilates", "Stretching"]
+  },
+  {
+    "word": "Garden",
+    "questions": [
+      { "question": "What?", "options": ["Flowers", "Vegetables", "Both", "Plants"] },
+      { "question": "Where?", "options": ["Outdoor", "Indoor", "Both", "Balcony"] },
+      { "question": "Time?", "options": ["Morning", "Evening", "Weekends", "Any"] },
+      { "question": "Experience?", "options": ["Beginner", "Experienced", "Expert", "None"] }
+    ],
+    "alternatives": ["Park", "Nature", "Plants"]
+  },
+  {
+    "word": "Sleep",
+    "questions": [
+      { "question": "Hours?", "options": ["6 or less", "7", "8", "9+"] },
+      { "question": "When?", "options": ["Early", "Late", "Varies", "Strict"] },
+      { "question": "Environment?", "options": ["Dark", "Noise OK", "Cool", "Any"] },
+      { "question": "Nap?", "options": ["Never", "Sometimes", "Often", "Daily"] }
+    ],
+    "alternatives": ["Rest", "Relax", "Bed"]
+  },
+  {
+    "word": "Art",
+    "questions": [
+      { "question": "Type?", "options": ["Paint", "Draw", "Sculpt", "View"] },
+      { "question": "Where?", "options": ["Museum", "Home", "Gallery", "Any"] },
+      { "question": "Style?", "options": ["Modern", "Classical", "Abstract", "Any"] },
+      { "question": "Create?", "options": ["Yes", "No", "Sometimes", "Rarely"] }
+    ],
+    "alternatives": ["Craft", "Design", "Photo"]
+  },
+  {
+    "word": "Winter",
+    "questions": [
+      { "question": "Feel?", "options": ["Love", "Like", "Tolerate", "Dislike"] },
+      { "question": "Activity?", "options": ["Ski", "Cozy in", "Walk", "Any"] },
+      { "question": "Holidays?", "options": ["Important", "Nice", "Neutral", "Skip"] },
+      { "question": "Snow?", "options": ["Love", "OK", "Annoying", "Rarely see"] }
+    ],
+    "alternatives": ["Christmas", "Snow", "Cold"]
+  },
+  {
+    "word": "Breakfast",
+    "questions": [
+      { "question": "When?", "options": ["Early", "Late", "Skip", "Anytime"] },
+      { "question": "Style?", "options": ["Light", "Full", "Sweet", "Savory"] },
+      { "question": "Where?", "options": ["Home", "Cafe", "On go", "Any"] },
+      { "question": "Important?", "options": ["Yes", "No", "Sometimes", "Rarely"] }
+    ],
+    "alternatives": ["Brunch", "Lunch", "Coffee"]
+  },
+  {
+    "word": "Comedy",
+    "questions": [
+      { "question": "Format?", "options": ["Stand-up", "Movie", "Series", "Any"] },
+      { "question": "Style?", "options": ["Dry", "Slapstick", "Dark", "Any"] },
+      { "question": "With?", "options": ["Alone", "Partner", "Friends", "Any"] },
+      { "question": "When?", "options": ["Need laugh", "Evening", "Anytime", "Rarely"] }
+    ],
+    "alternatives": ["Drama", "Horror", "Romance"]
+  },
+  {
+    "word": "Ocean",
+    "questions": [
+      { "question": "Activity?", "options": ["Swim", "Watch", "Boat", "All"] },
+      { "question": "Best time?", "options": ["Morning", "Sunset", "Storm", "Any"] },
+      { "question": "Feel?", "options": ["Calm", "Exciting", "Both", "Neutral"] },
+      { "question": "How often?", "options": ["Often", "Sometimes", "Rarely", "Never"] }
+    ],
+    "alternatives": ["Beach", "Lake", "River"]
+  },
+  {
+    "word": "Puzzle",
+    "questions": [
+      { "question": "Type?", "options": ["Jigsaw", "Word", "Logic", "Any"] },
+      { "question": "When?", "options": ["Evening", "Weekend", "Anytime", "Rarely"] },
+      { "question": "With?", "options": ["Alone", "Partner", "Family", "Any"] },
+      { "question": "Difficulty?", "options": ["Easy", "Medium", "Hard", "Mix"] }
+    ],
+    "alternatives": ["Game", "Crossword", "Board game"]
+  },
+  {
+    "word": "Spa",
+    "questions": [
+      { "question": "What?", "options": ["Massage", "Facial", "Both", "All"] },
+      { "question": "How often?", "options": ["Regular", "Sometimes", "Rarely", "Never"] },
+      { "question": "With?", "options": ["Alone", "Partner", "Friends", "Any"] },
+      { "question": "Where?", "options": ["Resort", "Local", "Home", "Any"] }
+    ],
+    "alternatives": ["Bath", "Relax", "Wellness"]
+  },
+  {
+    "word": "Festival",
+    "questions": [
+      { "question": "Type?", "options": ["Music", "Food", "Culture", "Any"] },
+      { "question": "Crowd?", "options": ["Love", "OK", "Prefer small", "Avoid"] },
+      { "question": "Duration?", "options": ["Day", "Weekend", "Week", "Any"] },
+      { "question": "With?", "options": ["Partner", "Friends", "Solo", "Any"] }
+    ],
+    "alternatives": ["Concert", "Fair", "Party"]
+  },
+  {
+    "word": "Bicycle",
+    "questions": [
+      { "question": "Purpose?", "options": ["Commute", "Sport", "Leisure", "All"] },
+      { "question": "Where?", "options": ["City", "Country", "Trail", "Any"] },
+      { "question": "Alone or group?", "options": ["Alone", "Partner", "Group", "Any"] },
+      { "question": "How often?", "options": ["Daily", "Weekly", "Sometimes", "Rarely"] }
+    ],
+    "alternatives": ["Running", "Walking", "Scooter"]
+  },
+  {
+    "word": "Fireplace",
+    "questions": [
+      { "question": "Real or fake?", "options": ["Real", "Fake", "Either", "None"] },
+      { "question": "When?", "options": ["Winter", "Fall", "Anytime", "Rarely"] },
+      { "question": "Activity?", "options": ["Read", "Talk", "Relax", "All"] },
+      { "question": "With?", "options": ["Alone", "Partner", "Family", "Any"] }
+    ],
+    "alternatives": ["Candle", "Heater", "Cozy"]
+  },
+  {
+    "word": "Star",
+    "questions": [
+      { "question": "When?", "options": ["Night", "Rarely look", "Camping", "Anytime"] },
+      { "question": "Interest?", "options": ["Astronomy", "Romantic", "Both", "Casual"] },
+      { "question": "Where?", "options": ["Country", "City", "Any", "Never"] },
+      { "question": "With?", "options": ["Alone", "Partner", "Any", "N/A"] }
+    ],
+    "alternatives": ["Moon", "Sky", "Space"]
+  }
+]

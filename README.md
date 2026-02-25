@@ -136,6 +136,19 @@ When running the web app in development (`NODE_ENV=development`):
 
 **Dev mode:** Use `?devStage=N` on the play URL (e.g. `/play?session=...&token=...&role=player1&devStage=3`) to skip to stage N and inject mock questionnaire data if none exists.
 
+## Stage 4: Zoom Map + Word Guessing
+
+- **Flow:** 6 sub-rounds; each round has a Describer (answers 4 MC questions about a secret word) and a Guesser (sees answers + 4 word options). Correct word guess → zoom in on TV; wrong → zoom out. Either player can type a **location guess** at any time; correct (Eiffel Tower) → stage ends and advance.
+- **Server state** (in `stagePayloadJson`): `subRoundIndex`, `zoomLevel` (0–6), `phase` (describe | guess | result), `describerRole`, `word`, `questions`, `describerAnswers` / `describerAnswerTexts`, `wordOptions`, `result`, `stageComplete`, `locationCorrect`.
+- **Messages:** `describerSubmit` { answers }, `guesserSubmit` { wordIndex }, `locationGuess` { text }, `next` (from result phase).
+- **Words data:** `rooms/stages/data/words.json` (~30 entries: word, questions[], alternatives[]). Add or edit entries to extend; server caches the file.
+- **Extending later:** Support multiple locations by adding a `targetLocation` and per-location word sets; swap `words.json` for an API or dynamic list; use real map tiles and zoom levels when integrating a map provider.
+- **Testing:** Use `/dev` with stage 4 to open directly at this stage.
+- **Resilience:** Full state lives in `stagePayloadJson`; reconnecting clients rehydrate from it.
+- **UX:** Role badge (Describer/Guesser), progressive disclosure (only current phase content), location guess always visible, TV never shows the secret word.
+- **TV map:** MVP uses a zoom-level visual (scale) and placeholder; replace with static images or a map API when needed.
+- **Victory:** Location guess correct → `advanceToInterim(5)` (then ready → end). Completing 6 rounds also advances to interim 5.
+
 ## Pitfalls and practices
 
 - **One room per session:** Room is keyed by session (metadata.sessionId); `/join` returns existing roomId when the session already has a room.

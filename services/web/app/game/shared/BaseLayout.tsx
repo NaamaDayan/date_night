@@ -16,6 +16,7 @@ export function BaseLayout({ title, children }: BaseLayoutProps) {
           fontSize: 24,
           marginBottom: theme.spacing.lg,
           color: theme.colors.text,
+          fontWeight: 700,
         }}
       >
         {title}

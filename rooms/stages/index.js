@@ -4,8 +4,9 @@
 const stage1 = require("./stage1Logic.js");
 const stage2 = require("./stage2Logic.js");
 const stage3 = require("./stage3Logic.js");
+const stage4 = require("./stage4Logic.js");
 
-const STAGES = [stage1, stage2, stage3];
+const STAGES = [stage1, stage2, stage3, stage4];
 
 const GAME_STATE = {
   WAITING_FOR_START: "WAITING_FOR_START",

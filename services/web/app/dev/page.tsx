@@ -63,7 +63,7 @@ export default function DevPlayPage() {
           onChange={(e) => setStage(Number(e.target.value))}
           style={{ padding: "6px 10px" }}
         >
-          {[1, 2, 3].map((n) => (
+          {[1, 2, 3, 4].map((n) => (
             <option key={n} value={n}>
               Stage {n}
             </option>
