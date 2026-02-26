@@ -47,7 +47,17 @@ const QUESTIONS = [
   "Who is more likely to plan a surprise?",
 ];
 
-const TARGET_IMAGE_ANSWER = "eiffel tower"; // hidden phrase; server-side only
+const TARGET_IMAGE_ANSWER = "eiffel tower"; // primary hidden phrase; server-side only
+
+// Additional accepted variants (normalized, lowercase, spaces collapsed)
+const TARGET_IMAGE_VARIANTS = [
+  "eiffel",
+  "eiffel tower",
+  "eiggel tower",
+  "מגדל אייפל",
+  "אייפל",
+  "איפל",
+];
 
 function normalizeGuess(text) {
   return String(text || "")
@@ -58,11 +68,17 @@ function normalizeGuess(text) {
 
 function isGuessCorrect(text) {
   const n = normalizeGuess(text);
-  // loosely accept variations around the target phrase
   if (!n) return false;
-  if (n === "eiffel" || n === "tower") return true;
-  if (n.includes("eiffel") || n.includes("tower")) return true;
+
+  // Direct match on primary answer
   if (n === TARGET_IMAGE_ANSWER) return true;
+
+  // Match any variant exactly
+  if (TARGET_IMAGE_VARIANTS.includes(n)) return true;
+
+  // Also accept if the normalized text contains the primary phrase
+  if (n.includes(TARGET_IMAGE_ANSWER)) return true;
+
   return false;
 }
 
