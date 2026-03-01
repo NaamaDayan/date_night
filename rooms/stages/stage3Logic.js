@@ -1,6 +1,6 @@
 /**
  * Stage 3: Both must type the same word to "win" the stage.
- * When both have submitted and words match (case-insensitive), advance to end.
+ * When both have submitted and words match (case-insensitive), advance to stage 4.
  */
 
 const { setStageTexts, getQuestionnaire, setPayload, parsePayload } = require("./IStage.js");
@@ -34,14 +34,14 @@ function onMessage(room, client, type, data) {
     const match = payload.player1Word.toLowerCase() === payload.player2Word.toLowerCase();
     if (match) {
       room.addToHistory(3, payload);
-      room.advanceToEnd();
+      room.advanceToInterim(4);
     }
   }
   return true;
 }
 
 function getInterimTitle() {
-  return "Final stage!";
+  return "Get ready for Stage 3!";
 }
 
 module.exports = {
