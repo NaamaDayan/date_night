@@ -3,21 +3,11 @@
 import { useCallback, useState, useMemo } from "react";
 import type { SyncedGameState, QuestionnaireData } from "../../types";
 import { useGameTheme } from "../../shared/GameThemeProvider";
+import { PlayerLayout } from "../../shared/PlayerLayout";
 import { Button } from "../../shared/Button";
 import { parseStage2Payload } from "./types";
 import { COPY } from "./copy";
 import { DatePuzzleButtons } from "./DatePuzzleButtons";
-
-const phoneContainerStyle: React.CSSProperties = {
-  maxWidth: "min(420px, 100vw)",
-  width: "100%",
-  margin: "0 auto",
-  paddingBottom: 80,
-  paddingLeft: "max(12px, env(safe-area-inset-left))",
-  paddingRight: "max(12px, env(safe-area-inset-right))",
-  paddingTop: "max(12px, env(safe-area-inset-top))",
-  boxSizing: "border-box",
-};
 
 interface Props {
   state: SyncedGameState;
@@ -53,30 +43,10 @@ export function Player1View({ state, room }: Props) {
   }, [room]);
 
   return (
-    <div dir="rtl" style={phoneContainerStyle}>
-      <div className="game-step-enter" style={{ marginBottom: 16, textAlign: "center" }}>
-        <p
-          style={{
-            fontSize: 18,
-            fontWeight: 700,
-            margin: 0,
-            marginBottom: 4,
-            color: theme.colors.text,
-          }}
-        >
-          {COPY.phoneTitle}
-        </p>
-        <p
-          style={{
-            fontSize: 14,
-            margin: 0,
-            color: theme.colors.textMuted,
-          }}
-        >
-          {!isSolved && (discoveryDone ? COPY.orderIntro : COPY.discoverIntro)}
-        </p>
-      </div>
-
+    <PlayerLayout
+      stageTitle={COPY.phoneTitle}
+      subtitle={!isSolved ? (discoveryDone ? COPY.orderIntro : COPY.discoverIntro) : undefined}
+    >
       <div style={{ marginBottom: 20 }}>
         <DatePuzzleButtons
           buttons={buttons}
@@ -90,7 +60,7 @@ export function Player1View({ state, room }: Props) {
         <Button
           variant="secondary"
           onClick={handleReset}
-          style={{ width: "100%", marginBottom: 16, minHeight: 44 }}
+          style={{ width: "100%", marginBottom: 16, minHeight: 48 }}
         >
           {COPY.resetButton}
         </Button>
@@ -100,7 +70,7 @@ export function Player1View({ state, room }: Props) {
         <div className="game-step-enter" style={{ marginTop: 16 }}>
           <p
             style={{
-              fontSize: 20,
+              fontSize: "clamp(18px, 5vw, 22px)",
               fontWeight: 700,
               marginBottom: 8,
               color: theme.colors.success,
@@ -111,7 +81,7 @@ export function Player1View({ state, room }: Props) {
           </p>
           <p
             style={{
-              fontSize: 14,
+              fontSize: theme.typography.phoneCaption,
               marginBottom: 24,
               color: theme.colors.textMuted,
               textAlign: "center",
@@ -121,12 +91,12 @@ export function Player1View({ state, room }: Props) {
           </p>
           <Button
             onClick={() => room.send("continue")}
-            style={{ width: "100%", minHeight: 48 }}
+            style={{ width: "100%", minHeight: 52 }}
           >
             {COPY.continueButton}
           </Button>
         </div>
       )}
-    </div>
+    </PlayerLayout>
   );
 }

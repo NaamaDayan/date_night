@@ -12,7 +12,7 @@
  *   - No per-press feedback (no wrong message, no counter).
  */
 
-const { setStageTexts, getQuestionnaire, setPayload, parsePayload } = require("./IStage.js");
+const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("./IStage.js");
 const { ROLES } = require("../../shared/constants.js");
 
 const STAGE_INDEX = 2;
@@ -65,18 +65,28 @@ function applyTextsForPhase(room, state, payload) {
   );
 }
 
-function onEnter(room, state) {
-  const payload = buildInitialPayload();
-  console.log("[stage2] onEnter payload.buttons =", JSON.stringify(payload.buttons));
+function startPlaying(room, state, payload) {
+  console.log("[stage2] startPlaying payload.buttons =", JSON.stringify(payload.buttons));
   setPayload(state, payload);
   applyTextsForPhase(room, state, payload);
+}
+
+function onEnter(room, state) {
+  const payload = addWelcomeState(buildInitialPayload());
+  setPayload(state, payload);
 }
 
 function onMessage(room, client, type, data) {
   const role = client.userData?.role;
   if (role !== ROLES.PLAYER1 && role !== ROLES.PLAYER2) return false;
 
+  if (type === "playerReady") {
+    return handleWelcomeReady(room, client, startPlaying);
+  }
+
   const payload = parsePayload(room.state);
+
+  if (payload.welcomeStatus === "welcome") return false;
 
   if (payload.stageComplete && type !== "continue") return false;
 

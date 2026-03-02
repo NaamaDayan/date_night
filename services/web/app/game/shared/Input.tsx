@@ -4,9 +4,6 @@ import { useGameTheme } from "./GameThemeProvider";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-/**
- * Game-style input: gradient border feel, focus glow, smooth transitions.
- */
 export function Input({ style, ...props }: InputProps) {
   const theme = useGameTheme();
   return (
@@ -16,11 +13,13 @@ export function Input({ style, ...props }: InputProps) {
         color: theme.colors.text,
         border: `2px solid ${theme.colors.border}`,
         borderRadius: theme.radius,
-        padding: `${theme.spacing.sm}px ${theme.spacing.md}px`,
+        padding: `${theme.spacing.sm + 4}px ${theme.spacing.md}px`,
         fontFamily: theme.fontFamily,
         fontSize: 16,
         fontWeight: 500,
         minWidth: 200,
+        minHeight: 48,
+        boxSizing: "border-box",
         transition: `border-color ${theme.animation.durationNormal}, box-shadow ${theme.animation.durationNormal}, transform ${theme.animation.durationFast} ${theme.animation.easeOut}`,
         ...style,
       }}

@@ -20,6 +20,8 @@ const {
   getQuestionnaire,
   setPayload,
   parsePayload,
+  addWelcomeState,
+  handleWelcomeReady,
 } = require("./IStage.js");
 const { ROLES } = require("../../shared/constants.js");
 
@@ -170,10 +172,14 @@ function applyTextsForPhase(room, state, payload) {
   );
 }
 
-function onEnter(room, state) {
-  const payload = buildInitialPayload();
+function startPlaying(room, state, payload) {
   setPayload(state, payload);
   applyTextsForPhase(room, state, payload);
+}
+
+function onEnter(room, state) {
+  const payload = addWelcomeState(buildInitialPayload());
+  setPayload(state, payload);
 }
 
 function handleAnswer(room, client, payload, data) {
@@ -326,7 +332,13 @@ function onMessage(room, client, type, data) {
   const role = client.userData?.role;
   if (role !== ROLES.PLAYER1 && role !== ROLES.PLAYER2) return false;
 
+  if (type === "playerReady") {
+    return handleWelcomeReady(room, client, startPlaying);
+  }
+
   const payload = parsePayload(room.state);
+
+  if (payload.welcomeStatus === "welcome") return false;
 
   if (payload.stageComplete && type !== "continue") {
     return false;

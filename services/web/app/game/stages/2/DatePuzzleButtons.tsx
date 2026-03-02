@@ -64,8 +64,8 @@ export function DatePuzzleButtons({
             onClick={() => handleClick(index, digit)}
             className="game-btn-press"
             style={{
-              width: "clamp(48px, 11vw, 64px)",
-              height: "clamp(48px, 11vw, 64px)",
+              width: "clamp(52px, 12vw, 72px)",
+              height: "clamp(52px, 12vw, 72px)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

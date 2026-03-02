@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import type { SyncedGameState, QuestionnaireData } from "../../types";
 import { useGameTheme } from "../../shared/GameThemeProvider";
+import { TVLayout } from "../../shared/TVLayout";
 import { parseStage1Payload } from "./types";
 import { COPY } from "./copy";
 
@@ -53,37 +54,23 @@ export function TVView({ state }: Props) {
   }, [payload.questionsAsked, payload.totalMatches, blurLevel]);
 
   return (
-    <div
-      dir="rtl"
-      style={{
-        width: "100%",
-        minHeight: "100dvh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-        overflow: "hidden",
-        boxSizing: "border-box",
-        margin: -theme.spacing.md,
-        padding: theme.spacing.md,
-      }}
-    >
-      {/* Blurred "image" area */}
+    <TVLayout stageNumber={1} footer={!isComplete ? statsText : undefined}>
+      {/* Blurred image background */}
       <div
-        className="game-bg-animated"
         style={{
           position: "absolute",
           inset: 0,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          zIndex: 0,
         }}
       >
         <div
           className="game-map-breathe"
           style={{
-            width: "min(50vw, 340px)",
-            height: "min(50vw, 340px)",
+            width: "min(50vw, 380px)",
+            height: "min(50vw, 380px)",
             borderRadius: 24,
             overflow: "hidden",
             filter: `blur(${blurPx}px)`,
@@ -107,7 +94,7 @@ export function TVView({ state }: Props) {
         </div>
       </div>
 
-      {/* Overlay content */}
+      {/* Content overlay */}
       <div
         style={{
           position: "relative",
@@ -118,7 +105,7 @@ export function TVView({ state }: Props) {
       >
         <h1
           style={{
-            fontSize: "clamp(24px, 4vw, 36px)",
+            fontSize: theme.typography.tvTitle,
             margin: 0,
             marginBottom: 8,
             color: theme.colors.text,
@@ -130,7 +117,7 @@ export function TVView({ state }: Props) {
         {!isComplete && (
           <p
             style={{
-              fontSize: "clamp(14px, 2.2vw, 18px)",
+              fontSize: theme.typography.tvBody,
               margin: 0,
               marginBottom: 16,
               color: theme.colors.textMuted,
@@ -144,7 +131,7 @@ export function TVView({ state }: Props) {
           <p
             className="game-step-enter"
             style={{
-              fontSize: "clamp(20px, 3vw, 26px)",
+              fontSize: "clamp(20px, 3vw, 28px)",
               fontWeight: 700,
               marginTop: 8,
               color: theme.colors.text,
@@ -158,7 +145,7 @@ export function TVView({ state }: Props) {
           <p
             className="game-step-enter"
             style={{
-              fontSize: "clamp(18px, 2.5vw, 24px)",
+              fontSize: theme.typography.tvBody,
               fontWeight: 600,
               marginTop: 12,
               color: theme.colors.text,
@@ -173,7 +160,7 @@ export function TVView({ state }: Props) {
             <p
               className="game-text-glow"
               style={{
-                fontSize: "clamp(32px, 5vw, 44px)",
+                fontSize: "clamp(32px, 5vw, 48px)",
                 fontWeight: 800,
                 margin: 0,
                 marginBottom: 8,
@@ -184,7 +171,7 @@ export function TVView({ state }: Props) {
             </p>
             <p
               style={{
-                fontSize: "clamp(16px, 2.4vw, 20px)",
+                fontSize: theme.typography.tvBody,
                 margin: 0,
                 color: theme.colors.textMuted,
               }}
@@ -194,7 +181,6 @@ export function TVView({ state }: Props) {
           </div>
         )}
       </div>
-    </div>
+    </TVLayout>
   );
 }
-

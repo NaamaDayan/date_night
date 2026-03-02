@@ -6,10 +6,10 @@ import { COPY } from "./copy";
 import type { Stage4Payload } from "./types";
 
 const responsive = {
-  icon: "clamp(24px, 6vw, 32px)",
-  title: "clamp(17px, 4.5vw, 22px)",
+  icon: "clamp(28px, 6vw, 36px)",
+  title: "clamp(18px, 4.5vw, 22px)",
   sub: "clamp(14px, 3.5vw, 16px)",
-  body: "clamp(14px, 3.5vw, 17px)",
+  body: "clamp(15px, 3.5vw, 17px)",
 };
 
 /** Role card with game-like typography hierarchy */

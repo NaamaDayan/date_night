@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { SyncedGameState, QuestionnaireData } from "../../types";
 import { useGameTheme } from "../../shared/GameThemeProvider";
+import { PlayerLayout } from "../../shared/PlayerLayout";
 import { Button } from "../../shared/Button";
 import { Input } from "../../shared/Input";
 import { COPY } from "./copy";
@@ -15,17 +16,6 @@ interface Props {
   room: { send: (type: string, data?: unknown) => void };
   questionnaire: QuestionnaireData;
 }
-
-const phoneContainerStyle: React.CSSProperties = {
-  maxWidth: "min(420px, 100vw)",
-  width: "100%",
-  margin: "0 auto",
-  paddingBottom: 80,
-  paddingLeft: "max(12px, env(safe-area-inset-left))",
-  paddingRight: "max(12px, env(safe-area-inset-right))",
-  paddingTop: "max(12px, env(safe-area-inset-top))",
-  boxSizing: "border-box",
-};
 
 export function Player1View({ state, room, questionnaire }: Props) {
   const theme = useGameTheme();
@@ -40,7 +30,6 @@ export function Player1View({ state, room, questionnaire }: Props) {
   const showCorrectToast = Boolean(payload.win && payload.stageComplete);
 
   const partnerName = useMemo(() => {
-    // Player 1's partner is partner2
     return questionnaire?.partner2Name || "בן / בת הזוג";
   }, [questionnaire]);
 
@@ -69,39 +58,16 @@ export function Player1View({ state, room, questionnaire }: Props) {
   const safeAsked = asked || 1;
 
   return (
-    <div dir="rtl" style={phoneContainerStyle}>
-      <div
-        className="game-step-enter"
-        style={{ marginBottom: 16, textAlign: "center" }}
-      >
-        <p
-          style={{
-            fontSize: 18,
-            fontWeight: 700,
-            margin: 0,
-            marginBottom: 4,
-            color: theme.colors.text,
-          }}
-        >
-          {COPY.phoneStageTitle}
-        </p>
-        <p
-          style={{
-            fontSize: 14,
-            margin: 0,
-            color: theme.colors.textMuted,
-          }}
-        >
-          {COPY.phoneQuestionIntro}
-        </p>
-      </div>
-
+    <PlayerLayout
+      stageTitle={COPY.phoneStageTitle}
+      subtitle={COPY.phoneQuestionIntro}
+    >
       {!isComplete && phase === "questions" && (
         <div key={payload.currentQuestionIndex ?? 0} className="game-step-enter" style={{ marginBottom: 24 }}>
           {payload.lastPairMatched !== null && payload.lastPairMatched !== undefined && (
             <p
               style={{
-                fontSize: 15,
+                fontSize: "clamp(14px, 3.5vw, 16px)",
                 fontWeight: 700,
                 marginBottom: 12,
                 textAlign: "center",
@@ -113,7 +79,7 @@ export function Player1View({ state, room, questionnaire }: Props) {
           )}
           <p
             style={{
-              fontSize: 18,
+              fontSize: theme.typography.phoneTitle,
               fontWeight: 700,
               marginBottom: 20,
               color: theme.colors.text,
@@ -126,20 +92,20 @@ export function Player1View({ state, room, questionnaire }: Props) {
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <Button
                 onClick={() => handleAnswer("me")}
-                style={{ width: "100%", minHeight: 48 }}
+                style={{ width: "100%", minHeight: 52 }}
               >
                 {COPY.meOption}
               </Button>
               <Button
                 variant="secondary"
                 onClick={() => handleAnswer("partner")}
-                style={{ width: "100%", minHeight: 48 }}
+                style={{ width: "100%", minHeight: 52 }}
               >
                 {partnerName}
               </Button>
             </div>
           ) : (
-            <p style={{ fontSize: 15, color: theme.colors.textMuted, textAlign: "center", marginTop: 8 }}>
+            <p style={{ fontSize: theme.typography.phoneCaption, color: theme.colors.textMuted, textAlign: "center", marginTop: 8 }}>
               ממתינים לבן/בת הזוג…
             </p>
           )}
@@ -150,7 +116,7 @@ export function Player1View({ state, room, questionnaire }: Props) {
         <div className="game-step-enter" style={{ marginTop: 12 }}>
           <p
             style={{
-              fontSize: 18,
+              fontSize: theme.typography.phoneTitle,
               fontWeight: 700,
               marginBottom: 8,
               color: theme.colors.text,
@@ -161,7 +127,7 @@ export function Player1View({ state, room, questionnaire }: Props) {
           </p>
           <p
             style={{
-              fontSize: 14,
+              fontSize: theme.typography.phoneCaption,
               marginBottom: 16,
               color: theme.colors.textMuted,
               textAlign: "center",
@@ -174,11 +140,11 @@ export function Player1View({ state, room, questionnaire }: Props) {
             value={finalValue}
             onChange={(e) => setFinalValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleFinalSubmit()}
-            style={{ width: "100%", marginBottom: 16, minHeight: 44 }}
+            style={{ width: "100%", marginBottom: 16, minHeight: 48 }}
           />
           <Button
             onClick={handleFinalSubmit}
-            style={{ width: "100%", minHeight: 48 }}
+            style={{ width: "100%", minHeight: 52 }}
           >
             {COPY.finalPromptSubmit}
           </Button>
@@ -189,7 +155,7 @@ export function Player1View({ state, room, questionnaire }: Props) {
         <div className="game-step-enter" style={{ marginTop: 12 }}>
           <p
             style={{
-              fontSize: 20,
+              fontSize: "clamp(18px, 5vw, 22px)",
               fontWeight: 700,
               marginBottom: 8,
               color: payload.win ? theme.colors.success : theme.colors.text,
@@ -200,7 +166,7 @@ export function Player1View({ state, room, questionnaire }: Props) {
           </p>
           <p
             style={{
-              fontSize: 14,
+              fontSize: theme.typography.phoneCaption,
               marginBottom: 16,
               color: theme.colors.textMuted,
               textAlign: "center",
@@ -210,7 +176,7 @@ export function Player1View({ state, room, questionnaire }: Props) {
           </p>
           <p
             style={{
-              fontSize: 14,
+              fontSize: theme.typography.phoneCaption,
               marginBottom: 24,
               color: theme.colors.textMuted,
               textAlign: "center",
@@ -222,14 +188,13 @@ export function Player1View({ state, room, questionnaire }: Props) {
           </p>
           <Button
             onClick={() => room.send("continue")}
-            style={{ width: "100%", minHeight: 48 }}
+            style={{ width: "100%", minHeight: 52 }}
           >
             {COPY.continueButton}
           </Button>
         </div>
       )}
 
-      {/* Floating guess button – available at all times before completion */}
       {!isComplete && (
         <button
           type="button"
@@ -243,7 +208,7 @@ export function Player1View({ state, room, questionnaire }: Props) {
             bottom: "max(16px, env(safe-area-inset-bottom))",
             right: "max(16px, env(safe-area-inset-right))",
             padding: "12px 18px",
-            minHeight: 44,
+            minHeight: 48,
             fontSize: "clamp(13px, 3.5vw, 15px)",
             borderRadius: 22,
             border: `2px solid ${theme.colors.border}`,
@@ -268,7 +233,6 @@ export function Player1View({ state, room, questionnaire }: Props) {
         onClose={() => setGuessModalOpen(false)}
         onSubmit={handleGuessSubmit}
       />
-    </div>
+    </PlayerLayout>
   );
 }
-

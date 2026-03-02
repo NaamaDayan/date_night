@@ -63,10 +63,46 @@ function setPayload(state, payload) {
   state.stagePayloadJson = JSON.stringify(payload || {});
 }
 
+/**
+ * Add welcome state fields to a stage payload.
+ */
+function addWelcomeState(payload) {
+  payload.welcomeStatus = "welcome";
+  payload.welcomeP1Ready = false;
+  payload.welcomeP2Ready = false;
+  return payload;
+}
+
+/**
+ * Handle the "playerReady" message during welcome phase.
+ * Returns true if handled. When both players are ready, calls startCallback
+ * which should transition the stage to its playing state.
+ */
+function handleWelcomeReady(room, client, startCallback) {
+  const { ROLES } = require("../../shared/constants.js");
+  const payload = parsePayload(room.state);
+  if (payload.welcomeStatus !== "welcome") return false;
+
+  const role = client.userData?.role;
+  if (role === ROLES.PLAYER1) payload.welcomeP1Ready = true;
+  else if (role === ROLES.PLAYER2) payload.welcomeP2Ready = true;
+  else return false;
+
+  if (payload.welcomeP1Ready && payload.welcomeP2Ready) {
+    payload.welcomeStatus = "playing";
+    startCallback(room, room.state, payload);
+  } else {
+    setPayload(room.state, payload);
+  }
+  return true;
+}
+
 module.exports = {
   setStageTexts,
   getQuestionnaire,
   getGameHistory,
   parsePayload,
   setPayload,
+  addWelcomeState,
+  handleWelcomeReady,
 };

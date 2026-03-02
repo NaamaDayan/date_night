@@ -59,16 +59,16 @@ export function GuessModal({ open, onClose, onSubmit }: Props) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <p style={{ marginBottom: 12, fontSize: 16 }}>{COPY.finalPromptTitle}</p>
+        <p style={{ marginBottom: 12, fontSize: 16, fontWeight: 600, color: theme.colors.text }}>{COPY.finalPromptTitle}</p>
         <Input
           placeholder={COPY.finalPromptSub}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          style={{ width: "100%", marginBottom: 16, minHeight: 44 }}
+          style={{ width: "100%", marginBottom: 16, minHeight: 48 }}
           autoFocus
         />
-        <Button onClick={handleSubmit} style={{ width: "100%", minHeight: 48 }}>
+        <Button onClick={handleSubmit} style={{ width: "100%", minHeight: 52 }}>
           {COPY.finalPromptSubmit}
         </Button>
       </div>

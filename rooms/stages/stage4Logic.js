@@ -7,7 +7,7 @@
 
 const path = require("path");
 const fs = require("fs");
-const { setStageTexts, getQuestionnaire, setPayload, parsePayload } = require("./IStage.js");
+const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("./IStage.js");
 const { ROLES } = require("../../shared/constants.js");
 
 const STAGE_INDEX = 4;
@@ -121,19 +121,28 @@ function startSubRound(room, state, payload) {
   applyTextsForPhase(room, state, payload);
 }
 
+function startPlaying(room, state, payload) {
+  payload.subRoundIndex = 0;
+  payload.zoomLevel = ZOOM_MIN;
+  payload.phase = "describe";
+  payload.describerRole = ROLES.PLAYER1;
+  payload.stageComplete = false;
+  payload.locationCorrect = false;
+  setPayload(state, payload);
+  startSubRound(room, state, payload);
+}
+
 function onEnter(room, state) {
   const payload = parsePayload(state);
-  const hasState = payload.subRoundIndex !== undefined && payload.phase;
+  const hasState = payload.subRoundIndex !== undefined && payload.phase && payload.welcomeStatus !== "welcome";
 
   if (!hasState) {
-    payload.subRoundIndex = 0;
-    payload.zoomLevel = ZOOM_MIN;
-    payload.phase = "describe";
-    payload.describerRole = ROLES.PLAYER1;
-    payload.stageComplete = false;
-    payload.locationCorrect = false;
-    setPayload(state, payload);
-    startSubRound(room, state, payload);
+    const welcomePayload = addWelcomeState({});
+    welcomePayload.subRoundIndex = undefined;
+    welcomePayload.phase = undefined;
+    welcomePayload.stageComplete = false;
+    welcomePayload.locationCorrect = false;
+    setPayload(state, welcomePayload);
   } else {
     applyTextsForPhase(room, state, payload);
   }
@@ -143,7 +152,14 @@ function onMessage(room, client, type, data) {
   const role = client.userData?.role;
   if (role !== ROLES.PLAYER1 && role !== ROLES.PLAYER2) return false;
 
+  if (type === "playerReady") {
+    return handleWelcomeReady(room, client, startPlaying);
+  }
+
   const payload = parsePayload(room.state);
+
+  if (payload.welcomeStatus === "welcome") return false;
+
   if (payload.stageComplete || payload.locationCorrect) return false;
 
   // Location guess: allowed anytime

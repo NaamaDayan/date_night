@@ -133,4 +133,65 @@
   animation: gameMapBreathe 4s ease-in-out infinite;
 }
 
+/* ---- Welcome screen: icon pulse ---- */
+@keyframes gameWelcomePulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+
+.game-welcome-icon {
+  animation: gameWelcomePulse 2.5s ease-in-out infinite;
+}
+
+/* ---- Welcome screen: staggered enter ---- */
+@keyframes gameWelcomeFadeIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.game-welcome-enter {
+  animation: gameWelcomeFadeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.game-welcome-enter-delay-1 { animation-delay: 0.12s; opacity: 0; }
+.game-welcome-enter-delay-2 { animation-delay: 0.24s; opacity: 0; }
+.game-welcome-enter-delay-3 { animation-delay: 0.36s; opacity: 0; }
+
+/* ---- Ready checkmark pop ---- */
+@keyframes gameReadyCheck {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.game-ready-check {
+  animation: gameReadyCheck 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ---- Dots loading bounce ---- */
+@keyframes gameDotsBounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+}
+
+.game-dots-loading span {
+  display: inline-block;
+  animation: gameDotsBounce 1.4s ease-in-out infinite;
+  font-size: 1.8em;
+  margin: 0 2px;
+}
+.game-dots-loading span:nth-child(1) { animation-delay: 0s; }
+.game-dots-loading span:nth-child(2) { animation-delay: 0.2s; }
+.game-dots-loading span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ---- Fade exit transition ---- */
+@keyframes gameFadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.98); }
+}
+
+.game-fade-exit {
+  animation: gameFadeOut 0.3s ease-in forwards;
+}
+
 /* ---- Sound-ready hooks: add data-game-action="select" | "submit" | "success" | "error" for future SFX ---- */

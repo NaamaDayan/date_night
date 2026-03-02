@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import type { SyncedGameState, QuestionnaireData } from "../../types";
 import { useGameTheme } from "../../shared/GameThemeProvider";
+import { TVLayout } from "../../shared/TVLayout";
 import { parseStage2Payload } from "./types";
 import { COPY } from "./copy";
 import { DatePuzzleButtons } from "./DatePuzzleButtons";
@@ -43,24 +44,11 @@ export function TVView({ state }: Props) {
   const headline = `${COPY.stageName} — ${questionnaire.partner1Name} & ${questionnaire.partner2Name}`;
 
   return (
-    <div
-      dir="rtl"
-      style={{
-        width: "100%",
-        minHeight: "100dvh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        boxSizing: "border-box",
-        margin: -theme.spacing.md,
-        padding: theme.spacing.md,
-      }}
-    >
+    <TVLayout stageNumber={2}>
       <div style={{ maxWidth: "min(640px, 90vw)", textAlign: "center" }}>
         <h1
           style={{
-            fontSize: "clamp(24px, 4vw, 36px)",
+            fontSize: theme.typography.tvTitle,
             margin: 0,
             marginBottom: 8,
             color: theme.colors.text,
@@ -72,7 +60,7 @@ export function TVView({ state }: Props) {
         {!isSolved && (
           <p
             style={{
-              fontSize: "clamp(14px, 2.2vw, 18px)",
+              fontSize: theme.typography.tvBody,
               margin: 0,
               marginBottom: 24,
               color: theme.colors.textMuted,
@@ -92,7 +80,7 @@ export function TVView({ state }: Props) {
           <p
             className="game-step-enter game-text-glow"
             style={{
-              fontSize: "clamp(22px, 4vw, 32px)",
+              fontSize: "clamp(24px, 4vw, 36px)",
               fontWeight: 700,
               margin: 0,
               color: theme.colors.accent,
@@ -102,6 +90,6 @@ export function TVView({ state }: Props) {
           </p>
         )}
       </div>
-    </div>
+    </TVLayout>
   );
 }

@@ -51,6 +51,14 @@ const theme = {
     easeOut: "cubic-bezier(0.34, 1.56, 0.64, 1)",
     easeInOut: "cubic-bezier(0.65, 0, 0.35, 1)",
   },
+  typography: {
+    tvTitle: "clamp(28px, 4vw, 48px)",
+    tvBody: "clamp(16px, 2.5vw, 24px)",
+    tvCaption: "clamp(12px, 1.5vw, 16px)",
+    phoneTitle: "clamp(18px, 4.5vw, 22px)",
+    phoneBody: "clamp(15px, 4vw, 18px)",
+    phoneCaption: "clamp(12px, 3vw, 14px)",
+  },
 };
 
 export const GameThemeContext = React.createContext(theme);

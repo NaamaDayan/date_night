@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { parseStage4Payload } from "./types";
 import { COPY } from "./copy";
 import { useGameTheme } from "../../shared/GameThemeProvider";
+import { TVLayout } from "../../shared/TVLayout";
 import type { SyncedGameState } from "../../types";
 
 const ZOOM_MAX = 6;
@@ -15,10 +16,6 @@ interface TVViewProps {
   state: SyncedGameState;
 }
 
-/**
- * TV tells the story: intro → discovery → play (zoom map) → feedback → role swap → final reveal.
- * No game logic changes; all flow is client-side + existing payload.
- */
 export function TVView({ state }: TVViewProps) {
   const theme = useGameTheme();
   const payload = parseStage4Payload(state.stagePayloadJson);
@@ -33,23 +30,19 @@ export function TVView({ state }: TVViewProps) {
   const [showRoleSwap, setShowRoleSwap] = useState(false);
   const prevSubRoundRef = useRef(subRound);
   const scale = 0.25 + (zoomLevel / ZOOM_MAX) * 0.75;
-  const breakout = theme.spacing.md;
 
-  // Intro: auto-advance (TV is view-only, no buttons)
   useEffect(() => {
     if (introDone) return;
     const t = setTimeout(() => setIntroDone(true), INTRO_DURATION_MS);
     return () => clearTimeout(t);
   }, [introDone]);
 
-  // Discovery: auto-advance after delay
   useEffect(() => {
     if (!introDone || discoveryDone) return;
     const t = setTimeout(() => setDiscoveryDone(true), DISCOVERY_DURATION_MS);
     return () => clearTimeout(t);
   }, [introDone, discoveryDone]);
 
-  // Role swap: show when subRound increases (new turn)
   useEffect(() => {
     if (subRound > prevSubRoundRef.current && phase === "describe") {
       setShowRoleSwap(true);
@@ -60,75 +53,159 @@ export function TVView({ state }: TVViewProps) {
     prevSubRoundRef.current = subRound;
   }, [subRound, phase]);
 
-  // —— Screen 0: Intro (view-only, auto-advances) ——
+  const mapBg = (
+    <div
+      className="game-bg-animated"
+      style={{
+        position: "absolute",
+        inset: -20,
+        backgroundSize: "200% 200%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: `linear-gradient(145deg, ${theme.colors.surface} 0%, ${theme.colors.background} 50%, ${theme.colors.background} 100%)`,
+      }}
+    />
+  );
+
+  const overlayStyle: React.CSSProperties = {
+    position: "relative",
+    zIndex: 2,
+    textAlign: "center",
+    padding: "clamp(16px, 3vw, 32px)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  };
+
   if (!introDone) {
     return (
-      <div dir="rtl" style={{ ...mapContainerStyle, margin: -breakout, width: `calc(100% + ${2 * breakout}px)`, minHeight: "100dvh" }}>
-        <div className="game-bg-animated" style={{ ...mapBlurStyle(theme), filter: "blur(8px)", transform: "scale(0.4)", background: mapGradient(theme) }} />
-        <div style={overlayContentStyle}>
-          <h1 style={{ ...headlineStyle(theme) }}>{COPY.introHeadline}</h1>
-          <p style={{ ...subtextStyle(theme) }}>{COPY.introSubtext}</p>
+      <TVLayout stageNumber={4}>
+        {mapBg}
+        <div style={overlayStyle}>
+          <h1
+            style={{
+              fontSize: theme.typography.tvTitle,
+              fontWeight: 700,
+              color: theme.colors.text,
+              margin: 0,
+              lineHeight: 1.3,
+              maxWidth: "min(400px, 90vw)",
+            }}
+          >
+            {COPY.introHeadline}
+          </h1>
+          <p
+            style={{
+              fontSize: theme.typography.tvBody,
+              color: theme.colors.textMuted,
+              margin: 0,
+              marginTop: 8,
+            }}
+          >
+            {COPY.introSubtext}
+          </p>
         </div>
-      </div>
+      </TVLayout>
     );
   }
 
-  // —— Screen 1: Discovery ——
   if (!discoveryDone) {
     return (
-      <div dir="rtl" style={{ ...mapContainerStyle, margin: -breakout, width: `calc(100% + ${2 * breakout}px)`, minHeight: "100dvh" }}>
-        <div className="game-bg-animated" style={{ ...mapBlurStyle(theme), filter: "blur(4px)", transform: "scale(0.5)", background: mapGradient(theme) }} />
-        <div style={overlayContentStyle}>
-          <span style={{ fontSize: 32, marginBottom: 12 }}>❤️ 🔍</span>
-          <p style={{ ...subtextStyle(theme), fontSize: 20 }}>{COPY.discoveryHint}</p>
+      <TVLayout stageNumber={4}>
+        {mapBg}
+        <div style={overlayStyle}>
+          <span style={{ fontSize: 32, marginBottom: 12 }}>🔍</span>
+          <p
+            style={{
+              fontSize: "clamp(18px, 2.5vw, 24px)",
+              color: theme.colors.textMuted,
+              margin: 0,
+            }}
+          >
+            {COPY.discoveryHint}
+          </p>
         </div>
-      </div>
+      </TVLayout>
     );
   }
 
-  // —— Final Reveal ——
   if (isComplete) {
     return (
-      <div dir="rtl" style={{ ...mapContainerStyle, margin: -breakout, width: `calc(100% + ${2 * breakout}px)`, minHeight: "100dvh" }}>
-        <div className="game-bg-animated" style={{ ...mapBlurStyle(theme), transform: `scale(${1})`, transition: "transform 0.8s ease", background: mapGradient(theme) }} />
-        <div style={overlayContentStyle}>
-          <p className="game-text-glow" style={{ ...headlineStyle(theme), color: theme.colors.accent, fontSize: 28 }}>{COPY.finalReveal}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // —— Screen 6: Role swap overlay ——
-  if (showRoleSwap) {
-    return (
-      <div dir="rtl" style={{ ...mapContainerStyle, margin: -breakout, width: `calc(100% + ${2 * breakout}px)`, minHeight: "100dvh" }}>
-        <div className="game-bg-animated" style={{ ...mapBlurStyle(theme), transform: `scale(${scale})`, transition: "transform 0.4s ease", background: mapGradient(theme) }} />
-        <div style={overlayContentStyle}>
-          <span style={{ fontSize: 28, marginBottom: 8 }}>↔</span>
-          <p style={{ ...subtextStyle(theme), fontSize: 22 }}>{COPY.roleSwap}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // —— Screen 5: Feedback (result phase) ——
-  if (phase === "result" && result) {
-    const success = result === "correct";
-    return (
-      <div dir="rtl" style={{ ...mapContainerStyle, margin: -breakout, width: `calc(100% + ${2 * breakout}px)`, minHeight: "100dvh" }}>
+      <TVLayout stageNumber={4}>
         <div
           className="game-bg-animated"
           style={{
-            ...mapBlurStyle(theme),
-            transform: `scale(${scale})`,
-            transition: "transform 0.5s ease",
-            background: mapGradient(theme),
+            position: "absolute",
+            inset: -20,
+            backgroundSize: "200% 200%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: `linear-gradient(145deg, ${theme.colors.surface} 0%, ${theme.colors.background} 50%, ${theme.colors.background} 100%)`,
+            transform: "scale(1)",
+            transition: "transform 0.8s ease",
           }}
         />
-        <div style={overlayContentStyle}>
+        <div style={overlayStyle}>
+          <p
+            className="game-text-glow"
+            style={{
+              fontSize: "clamp(24px, 4vw, 40px)",
+              fontWeight: 800,
+              margin: 0,
+              color: theme.colors.accent,
+            }}
+          >
+            {COPY.finalReveal}
+          </p>
+        </div>
+      </TVLayout>
+    );
+  }
+
+  if (showRoleSwap) {
+    return (
+      <TVLayout stageNumber={4}>
+        {mapBg}
+        <div style={overlayStyle}>
+          <span style={{ fontSize: 28, marginBottom: 8 }}>↔</span>
           <p
             style={{
-              fontSize: 26,
+              fontSize: "clamp(18px, 2.5vw, 24px)",
+              color: theme.colors.textMuted,
+              margin: 0,
+            }}
+          >
+            {COPY.roleSwap}
+          </p>
+        </div>
+      </TVLayout>
+    );
+  }
+
+  if (phase === "result" && result) {
+    const success = result === "correct";
+    return (
+      <TVLayout stageNumber={4}>
+        <div
+          className="game-bg-animated"
+          style={{
+            position: "absolute",
+            inset: -20,
+            backgroundSize: "200% 200%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: `linear-gradient(145deg, ${theme.colors.surface} 0%, ${theme.colors.background} 50%, ${theme.colors.background} 100%)`,
+            transform: `scale(${scale})`,
+            transition: "transform 0.5s ease",
+          }}
+        />
+        <div style={overlayStyle}>
+          <p
+            style={{
+              fontSize: "clamp(22px, 3.5vw, 30px)",
               fontWeight: 600,
               color: success ? theme.colors.accent : theme.colors.error,
               textAlign: "center",
@@ -138,94 +215,42 @@ export function TVView({ state }: TVViewProps) {
             {success ? COPY.feedbackSuccess : COPY.feedbackFail}
           </p>
         </div>
-      </div>
+      </TVLayout>
     );
   }
 
-  // —— Main play: map zoom (describe/guess) ——
   return (
-    <div dir="rtl" style={{ ...mapContainerStyle, margin: -breakout, width: `calc(100% + ${2 * breakout}px)`, minHeight: "100dvh" }}>
+    <TVLayout stageNumber={4}>
       <div
         className="game-bg-animated"
         style={{
-          ...mapBlurStyle(theme),
+          position: "absolute",
+          inset: -20,
+          backgroundSize: "200% 200%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: `linear-gradient(145deg, ${theme.colors.surface} 0%, ${theme.colors.background} 50%, ${theme.colors.background} 100%)`,
           transform: `scale(${scale})`,
           transition: "transform 0.4s ease",
-          background: mapGradient(theme),
         }}
       >
-        <div className="game-map-breathe" style={mapInnerStyle(theme)}>{zoomLevel >= ZOOM_MAX ? "📍" : "🗺️"}</div>
+        <div
+          className="game-map-breathe"
+          style={{
+            width: "min(20vw, 120px)",
+            height: "min(20vw, 120px)",
+            borderRadius: "50%",
+            background: `radial-gradient(circle at 50% 50%, ${theme.colors.border} 0%, ${theme.colors.surface} 70%)`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "clamp(24px, 5vw, 48px)",
+          }}
+        >
+          {zoomLevel >= ZOOM_MAX ? "📍" : "🗺️"}
+        </div>
       </div>
-    </div>
+    </TVLayout>
   );
-}
-
-const mapContainerStyle: React.CSSProperties = {
-  width: "100%",
-  minHeight: "100dvh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  position: "relative",
-  overflow: "hidden",
-  boxSizing: "border-box",
-};
-
-/** Map area gradient – used with game-bg-animated for subtle motion */
-function mapGradient(theme: { colors: { surface: string; background: string; border?: string } }) {
-  return `linear-gradient(145deg, ${theme.colors.surface} 0%, ${theme.colors.background} 50%, ${theme.colors.background} 100%)`;
-}
-
-function mapBlurStyle(theme: { colors: { background: string; surface: string } }) {
-  return {
-    position: "absolute" as const,
-    inset: -20,
-    backgroundSize: "200% 200%",
-    display: "flex" as const,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-  };
-}
-
-function mapInnerStyle(theme: { colors: { surface: string; border: string } }) {
-  return {
-    width: "min(20vw, 120px)",
-    height: "min(20vw, 120px)",
-    borderRadius: "50%",
-    background: `radial-gradient(circle at 50% 50%, ${theme.colors.border} 0%, ${theme.colors.surface} 70%)`,
-    display: "flex" as const,
-    alignItems: "center" as const,
-    justifyContent: "center" as const,
-    fontSize: "clamp(24px, 5vw, 48px)",
-  };
-}
-
-const overlayContentStyle: React.CSSProperties = {
-  position: "relative",
-  zIndex: 2,
-  textAlign: "center",
-  padding: "clamp(16px, 3vw, 32px)",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-};
-
-function headlineStyle(theme: { colors: { text: string } }) {
-  return {
-    fontSize: "clamp(22px, 4vw, 42px)",
-    fontWeight: 700,
-    color: theme.colors.text,
-    margin: 0,
-    lineHeight: 1.3,
-    maxWidth: "min(400px, 90vw)",
-  };
-}
-
-function subtextStyle(theme: { colors: { textMuted: string } }) {
-  return {
-    fontSize: "clamp(14px, 2.5vw, 22px)",
-    color: theme.colors.textMuted,
-    margin: 0,
-    marginTop: 8,
-  };
 }

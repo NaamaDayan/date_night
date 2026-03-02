@@ -8,6 +8,7 @@ import { COPY } from "./copy";
 import { LocationGuessModal } from "./LocationGuessModal";
 import { LocationGuessToast } from "./LocationGuessToast";
 import { useGameTheme } from "../../shared/GameThemeProvider";
+import { PlayerLayout } from "../../shared/PlayerLayout";
 import {
   RoleDescriber,
   RoleGuesser,
@@ -15,17 +16,6 @@ import {
   GuessingBlock,
   ResultBlockPhone,
 } from "./PhoneBlocks";
-
-const phoneContainerStyle: React.CSSProperties = {
-  maxWidth: "min(420px, 100vw)",
-  width: "100%",
-  margin: "0 auto",
-  paddingBottom: 72,
-  paddingLeft: "max(12px, env(safe-area-inset-left))",
-  paddingRight: "max(12px, env(safe-area-inset-right))",
-  paddingTop: "max(12px, env(safe-area-inset-top))",
-  boxSizing: "border-box",
-};
 
 interface Props {
   state: SyncedGameState;
@@ -56,7 +46,7 @@ export function Player1View({ state, room }: Props) {
   };
 
   return (
-    <div dir="rtl" style={phoneContainerStyle}>
+    <PlayerLayout stageTitle={COPY.introHeadline}>
       {phase === "describe" && (
         <>
           {isDescriber ? <RoleDescriber /> : <RoleGuesser />}
@@ -68,12 +58,32 @@ export function Player1View({ state, room }: Props) {
               onSubmit={handleDescriberSubmit}
             />
           )}
-          {!isDescriber && <p style={{ color: "#64748b", fontSize: 14, textAlign: "center", marginTop: 16 }}>...</p>}
+          {!isDescriber && (
+            <p
+              style={{
+                color: theme.colors.textMuted,
+                fontSize: theme.typography.phoneCaption,
+                textAlign: "center",
+                marginTop: 16,
+              }}
+            >
+              ממתינים לבן/בת הזוג...
+            </p>
+          )}
         </>
       )}
 
       {phase === "guess" && isDescriber && (
-        <p style={{ color: "#64748b", fontSize: 14, textAlign: "center", padding: 24 }}>...</p>
+        <p
+          style={{
+            color: theme.colors.textMuted,
+            fontSize: theme.typography.phoneCaption,
+            textAlign: "center",
+            padding: 24,
+          }}
+        >
+          ממתינים לניחוש...
+        </p>
       )}
       {phase === "guess" && !isDescriber && (
         <GuessingBlock payload={payload} onSubmit={handleGuesserSubmit} />
@@ -91,13 +101,17 @@ export function Player1View({ state, room }: Props) {
 
       <button
         type="button"
-        onClick={() => { setLocationModalOpen(true); setWrongToastDismissed(false); }}
+        onClick={() => {
+          setLocationModalOpen(true);
+          setWrongToastDismissed(false);
+        }}
+        className="game-btn-press"
         style={{
           position: "fixed",
           bottom: "max(16px, env(safe-area-inset-bottom))",
           right: "max(16px, env(safe-area-inset-right))",
           padding: "12px 16px",
-          minHeight: 44,
+          minHeight: 48,
           fontSize: "clamp(13px, 3.5vw, 15px)",
           borderRadius: 22,
           border: `2px solid ${theme.colors.border}`,
@@ -115,6 +129,6 @@ export function Player1View({ state, room }: Props) {
         onClose={() => setLocationModalOpen(false)}
         onSubmit={handleLocationSubmit}
       />
-    </div>
+    </PlayerLayout>
   );
 }
