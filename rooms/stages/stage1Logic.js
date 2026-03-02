@@ -15,7 +15,12 @@
  *   - When any player taps "Continue", we advance to Stage 2.
  */
 
-const { setStageTexts, getQuestionnaire, setPayload, parsePayload } = require("./IStage.js");
+const {
+  setStageTexts,
+  getQuestionnaire,
+  setPayload,
+  parsePayload,
+} = require("./IStage.js");
 const { ROLES } = require("../../shared/constants.js");
 
 const STAGE_INDEX = 1;
@@ -144,7 +149,7 @@ function applyTextsForPhase(room, state, payload) {
       state,
       `He Said · She Said — ${q.partner1Name} & ${q.partner2Name}`,
       "התמונה כמעט ברורה. כתבו מה לדעתכם מופיע בה.",
-      "התמונה כמעט ברורה. כתבו מה לדעתכם מופיע בה."
+      "התמונה כמעט ברורה. כתבו מה לדעתכם מופיע בה.",
     );
     return;
   }
@@ -152,12 +157,7 @@ function applyTextsForPhase(room, state, payload) {
   if (payload.phase === "results") {
     const baseTitle = `He Said · She Said — ${q.partner1Name} & ${q.partner2Name}`;
     const stats = `Matches: ${matches}/${asked || 1} · Blur: ${blurLevel}/${BLUR_MAX}`;
-    setStageTexts(
-      state,
-      `${baseTitle}`,
-      stats,
-      stats
-    );
+    setStageTexts(state, `${baseTitle}`, stats, stats);
     return;
   }
 
@@ -165,8 +165,8 @@ function applyTextsForPhase(room, state, payload) {
   setStageTexts(
     state,
     `He Said · She Said — ${q.partner1Name} & ${q.partner2Name}`,
-    "ענו על השאלה בטלפון: \"אני\" או שם בן/בת הזוג.",
-    "ענו על השאלה בטלפון: \"אני\" או שם בן/בת הזוג."
+    'ענו על השאלה בטלפון: "אני" או שם בן/בת הזוג.',
+    'ענו על השאלה בטלפון: "אני" או שם בן/בת הזוג.',
   );
 }
 
@@ -185,7 +185,8 @@ function handleAnswer(room, client, payload, data) {
   if (role === ROLES.PLAYER1 && payload.p1Answered) return true;
   if (role === ROLES.PLAYER2 && payload.p2Answered) return true;
 
-  const rawChoice = data && typeof data.choice === "string" ? data.choice.toLowerCase() : "";
+  const rawChoice =
+    data && typeof data.choice === "string" ? data.choice.toLowerCase() : "";
   const choice = rawChoice === "partner" ? "partner" : "me";
 
   if (role === ROLES.PLAYER1) {
@@ -248,8 +249,8 @@ function handleLiveGuess(room, client, payload, data) {
     data && data.text !== undefined
       ? data.text
       : data && data.guess !== undefined
-      ? data.guess
-      : "";
+        ? data.guess
+        : "";
 
   payload.lastGuessWrong = false;
 
@@ -275,7 +276,8 @@ function handleLiveGuess(room, client, payload, data) {
       payload.win = true;
       payload.winBy = "finalPrompt";
       payload.winnerRole = role;
-      payload.winnerName = role === ROLES.PLAYER1 ? q.partner1Name : q.partner2Name;
+      payload.winnerName =
+        role === ROLES.PLAYER1 ? q.partner1Name : q.partner2Name;
       payload.lastGuessText = String(text);
       payload.phase = "results";
       payload.awaitingFinalAnswers = false;
@@ -306,7 +308,8 @@ function handleLiveGuess(room, client, payload, data) {
     payload.win = true;
     payload.winBy = "liveGuess";
     payload.winnerRole = role;
-    payload.winnerName = role === ROLES.PLAYER1 ? q.partner1Name : q.partner2Name;
+    payload.winnerName =
+      role === ROLES.PLAYER1 ? q.partner1Name : q.partner2Name;
     payload.lastGuessText = String(text);
     payload.phase = "results";
     payload.awaitingFinalAnswers = false;

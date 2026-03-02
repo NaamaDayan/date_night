@@ -1,2 +1,4 @@
 node_modules
 services/web/.next/
+.env
+public/generated/*.png
