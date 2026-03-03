@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  QUESTIONNAIRE_FIELDS,
+  QUESTIONNAIRE_TITLE,
+  QUESTIONNAIRE_SUBTITLE,
+} from "./questionnaire-config";
 
 export default function QuestionnairePage() {
   const router = useRouter();
@@ -12,14 +17,18 @@ export default function QuestionnairePage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
     const form = e.currentTarget;
-    const body = {
-      partner1Name: (form.elements.namedItem("partner1Name") as HTMLInputElement).value,
-      partner2Name: (form.elements.namedItem("partner2Name") as HTMLInputElement).value,
-      howLong: (form.elements.namedItem("howLong") as HTMLInputElement).value,
-      howMet: (form.elements.namedItem("howMet") as HTMLInputElement).value,
-      whereMet: (form.elements.namedItem("whereMet") as HTMLInputElement).value,
-    };
+    const body: Record<string, string> = {};
+    for (const field of QUESTIONNAIRE_FIELDS) {
+      const el = form.elements.namedItem(field.name) as
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | HTMLSelectElement
+        | null;
+      body[field.name] = el?.value?.trim() ?? "";
+    }
+
     try {
       const res = await fetch("/api/questionnaire", {
         method: "POST",
@@ -40,34 +49,137 @@ export default function QuestionnairePage() {
   }
 
   return (
-    <main style={{ padding: "2rem", maxWidth: 600, margin: "0 auto" }}>
-      <h1>Couple questionnaire</h1>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        <label>
-          Name of partner 1
-          <input name="partner1Name" type="text" required style={{ display: "block", width: "100%", padding: 8 }} />
-        </label>
-        <label>
-          Name of partner 2
-          <input name="partner2Name" type="text" required style={{ display: "block", width: "100%", padding: 8 }} />
-        </label>
-        <label>
-          How long together
-          <input name="howLong" type="text" required style={{ display: "block", width: "100%", padding: 8 }} />
-        </label>
-        <label>
-          How they met
-          <input name="howMet" type="text" required style={{ display: "block", width: "100%", padding: 8 }} />
-        </label>
-        <label>
-          Where they met
-          <input name="whereMet" type="text" required style={{ display: "block", width: "100%", padding: 8 }} />
-        </label>
-        {error && <p style={{ color: "crimson" }}>{error}</p>}
-        <button type="submit" disabled={loading} style={{ padding: "0.75rem", cursor: loading ? "wait" : "pointer" }}>
-          {loading ? "Submitting…" : "Submit"}
-        </button>
-      </form>
+    <main
+      className="site-container"
+      style={{ justifyContent: "center", alignItems: "center" }}
+    >
+      <div style={{ width: "100%", maxWidth: 480 }}>
+        {/* Header */}
+        <div
+          className="animate-in"
+          style={{ textAlign: "center", marginBottom: 32 }}
+        >
+          <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}>
+            💑
+          </span>
+          <h1
+            style={{
+              fontSize: "clamp(22px, 5vw, 30px)",
+              fontWeight: 800,
+              marginBottom: 8,
+              lineHeight: 1.3,
+            }}
+          >
+            {QUESTIONNAIRE_TITLE}
+          </h1>
+          <p
+            style={{
+              fontSize: "clamp(14px, 3vw, 16px)",
+              color: "var(--text-muted)",
+            }}
+          >
+            {QUESTIONNAIRE_SUBTITLE}
+          </p>
+        </div>
+
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="site-card animate-in animate-in-d1"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 20,
+          }}
+        >
+          {QUESTIONNAIRE_FIELDS.map((field, i) => (
+            <div
+              key={field.name}
+              className={`animate-in animate-in-d${Math.min(i + 2, 5)}`}
+            >
+              <label className="site-label" htmlFor={field.name}>
+                <span style={{ marginRight: 6 }}>{field.icon}</span>
+                {field.label}
+              </label>
+              {field.type === "textarea" ? (
+                <textarea
+                  id={field.name}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  required={field.required}
+                  className="site-input"
+                  rows={3}
+                  style={{ resize: "vertical", minHeight: 80 }}
+                />
+              ) : field.type === "select" && field.options ? (
+                <select
+                  id={field.name}
+                  name={field.name}
+                  required={field.required}
+                  className="site-input"
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    {field.placeholder}
+                  </option>
+                  {field.options.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id={field.name}
+                  name={field.name}
+                  type="text"
+                  placeholder={field.placeholder}
+                  required={field.required}
+                  className="site-input"
+                />
+              )}
+            </div>
+          ))}
+
+          {error && (
+            <p
+              style={{
+                color: "var(--error)",
+                fontSize: 14,
+                fontWeight: 600,
+                textAlign: "center",
+                padding: "10px 16px",
+                background: "rgba(252,165,165,0.1)",
+                borderRadius: "var(--radius)",
+              }}
+            >
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="site-btn site-btn-primary"
+            style={{ width: "100%", fontSize: 17, marginTop: 4 }}
+          >
+            {loading ? "Creating your game…" : "Start your game"}
+          </button>
+        </form>
+
+        <p
+          className="animate-in animate-in-d5"
+          style={{
+            textAlign: "center",
+            fontSize: 13,
+            color: "var(--text-muted)",
+            marginTop: 16,
+            opacity: 0.6,
+          }}
+        >
+          Your answers are used only for the game and not stored permanently.
+        </p>
+      </div>
     </main>
   );
 }

@@ -8,26 +8,81 @@ export default async function ReadyPage() {
   if (!paid) redirect("/");
 
   return (
-    <main style={{ padding: "2rem", maxWidth: 600, margin: "0 auto" }}>
-      <h1>Your date is ready!</h1>
-      <p>Fill in the couple questionnaire to get your unique game links.</p>
-      <Link
-        href="/questionnaire"
+    <main
+      className="site-container"
+      style={{ justifyContent: "center", alignItems: "center" }}
+    >
+      <div
         style={{
-          display: "inline-block",
-          padding: "0.75rem 1.5rem",
-          background: "#333",
-          color: "#fff",
-          textDecoration: "none",
-          borderRadius: 6,
+          width: "100%",
+          maxWidth: 480,
+          textAlign: "center",
         }}
       >
-        Fill couple questionnaire
-      </Link>
-      <p style={{ marginTop: "1.5rem", color: "#666", fontSize: 14 }}>
-        You can also fill the questionnaire later. We&apos;ve sent a
-        confirmation email with a reminder.
-      </p>
+        <div className="animate-in" style={{ marginBottom: 32 }}>
+          <span
+            style={{
+              fontSize: "clamp(48px, 10vw, 72px)",
+              display: "block",
+              marginBottom: 16,
+            }}
+          >
+            🎉
+          </span>
+          <h1
+            className="text-glow"
+            style={{
+              fontSize: "clamp(26px, 6vw, 36px)",
+              fontWeight: 800,
+              marginBottom: 12,
+              lineHeight: 1.2,
+            }}
+          >
+            You&apos;re all set!
+          </h1>
+          <p
+            style={{
+              fontSize: "clamp(15px, 3vw, 18px)",
+              color: "var(--text-muted)",
+              lineHeight: 1.6,
+              maxWidth: 360,
+              margin: "0 auto",
+            }}
+          >
+            One quick step left — fill in a short questionnaire so we can
+            personalize the game for you and your partner.
+          </p>
+        </div>
+
+        <Link
+          href="/questionnaire"
+          className="site-btn site-btn-primary animate-in animate-in-d1"
+          style={{
+            width: "100%",
+            maxWidth: 360,
+            fontSize: 17,
+            padding: "16px 32px",
+            minHeight: 56,
+          }}
+        >
+          Fill couple questionnaire
+        </Link>
+
+        <p
+          className="animate-in animate-in-d2"
+          style={{
+            marginTop: 24,
+            fontSize: 13,
+            color: "var(--text-muted)",
+            opacity: 0.7,
+            lineHeight: 1.5,
+          }}
+        >
+          You can also fill the questionnaire later.
+          <br />
+          We&apos;ve sent a confirmation email with a reminder.
+        </p>
+      </div>
     </main>
   );
 }
