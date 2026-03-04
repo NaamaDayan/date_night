@@ -1,44 +1,30 @@
 /**
- * Stage 4 Hebrew copy — emotional, minimal, no instructions.
+ * Stage 3 Vision Board – copy for TV and player screens.
  */
 
 export const COPY = {
-  // Screen 0 – Stage Intro (TV)
-  introHeadline: "לאן תגיעו כשתבינו אחד את השנייה?",
-  introSubtext: "כל תשובה נכונה מקרבת אתכם",
-  introCta: "מתחילים",
+  // TV
+  tvTitle: "Our Vision Board",
+  tvIntroSubtext: "Answer either/or questions. When you both pick the same, it becomes part of your vision.",
+  tvRevealMatch: "You're aligned!",
+  tvRevealMismatch: "Different picks – that's okay.",
+  tvGenerating: "Creating your vision board… ✨",
+  tvShowResultTitle: "Your Vision Board",
+  tvShowResultContinue: "Tap Continue on your phone to go to the next stage.",
+  tvFallbackNoImage: "Your vision:",
 
-  // Screen 1 – Discovery (TV)
-  discoveryHint: "נסו להבין אחד את השנייה",
+  // Phone – intro
+  phoneIntroTitle: "Vision Board",
+  phoneIntroSub: "You'll answer questions together. When you both choose the same option, it's added to your shared vision.",
 
-  // Screen 2 – Role Assignment (Phones)
-  roleDescriberTitle: "את/ה מתאר/ת מילה",
-  roleDescriberSub: "רק את/ה רואה אותה",
-  roleGuesserTitle: "נסו לנחש למה בן/בת הזוג התכוונ/ה",
+  // Phone – asking
+  phoneQuestionIntro: "Choose one:",
+  phoneWaiting: "Waiting for your partner…",
 
-  // Screen 3 – Answering (Phone B)
-  answeringDone: "סיימתי",
+  // Phone – reveal
+  phoneNext: "Next question",
 
-  // Screen 4 – Guessing (Phone A)
-  guessingTitle: "ככה בן/בת הזוג שלך ענה/תה:",
-
-  // Screen 5 – Feedback (TV)
-  feedbackSuccess: "אתם על אותו גל 💛",
-  feedbackFail: "כמעט… נסו שוב יחד",
-
-  // Screen 6 – Role Swap (TV)
-  roleSwap: "מתחלפים",
-
-  // Persistent – Location guess
-  locationGuessButton: "יש לנו ניחוש 👀",
-  locationGuessPlaceholder: "איפה אתם חושבים שאתם?",
-  locationGuessSubmit: "שליחה",
-  locationWrong: "לא הפעם",
-  locationCorrect: "נכון! 💛",
-
-  // Final Reveal (TV)
-  finalReveal: "פריז. יפה לכם.",
-
-  // Phone result – continue
-  nextTurn: "הבא",
+  // Phone – showResult
+  phoneContinue: "Continue",
+  phoneResultTitle: "Your vision board is ready!",
 } as const;

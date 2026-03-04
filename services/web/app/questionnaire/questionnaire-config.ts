@@ -12,7 +12,7 @@ export interface QuestionField {
   name: string;
   label: string;
   placeholder: string;
-  type: "text" | "select" | "textarea";
+  type: "text" | "select" | "textarea" | "number";
   required: boolean;
   icon: string;
   options?: string[];
@@ -58,6 +58,14 @@ export const QUESTIONNAIRE_FIELDS: QuestionField[] = [
     type: "text",
     required: true,
     icon: "📍",
+  },
+  {
+    name: "yearOfMeeting",
+    label: "Year you met",
+    placeholder: "e.g. 2019",
+    type: "number",
+    required: true,
+    icon: "📅",
   },
 ];
 

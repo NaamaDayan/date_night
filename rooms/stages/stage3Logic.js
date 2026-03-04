@@ -14,7 +14,7 @@ const { ROLES } = require("../../shared/constants.js");
 const { PROMPTS, shuffleArray, getTvReaction } = require("./stage3PromptBank.js");
 const { generateVisionBoardImage } = require("./stage3GenerateImage.js");
 
-const STAGE_INDEX = 3;
+const STAGE_INDEX = 4;
 const STAGE_NAME = "Vision Board";
 const MUTUAL_PICKS_TARGET = 5;
 
@@ -240,7 +240,7 @@ function onMessage(room, client, type, data) {
       generationError: payload.generationError || null,
     };
     room.addToHistory(STAGE_INDEX, summary);
-    room.advanceToInterim(4);
+    room.advanceToInterim(5);
     return true;
   }
 
@@ -248,7 +248,7 @@ function onMessage(room, client, type, data) {
 }
 
 function getInterimTitle() {
-  return "Get ready for Stage 4!";
+  return "Get ready for Stage 5!";
 }
 
 module.exports = {

@@ -24,6 +24,7 @@ defineTypes(GameState, {
   readyForNextCount: "number",
   player1Submitted: "boolean",
   player2Submitted: "boolean",
+  yearOfMeeting: "number",
   // Legacy fields for backward compat (can be removed once client only uses new schema)
   stage: "number",
 });

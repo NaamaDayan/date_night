@@ -6,6 +6,7 @@ export interface QuestionnaireData {
   howLong: string;
   howMet: string;
   whereMet: string;
+  yearOfMeeting?: number;
 }
 
 export interface GameHistoryItem {
@@ -35,4 +36,5 @@ export interface SyncedGameState {
   readyForNextCount: number;
   player1Submitted: boolean;
   player2Submitted: boolean;
+  yearOfMeeting: number;
 }

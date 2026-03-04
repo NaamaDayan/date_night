@@ -29,6 +29,7 @@ function parseState(s: Record<string, unknown>): SyncedGameState {
     readyForNextCount: (s.readyForNextCount as number) ?? 0,
     player1Submitted: (s.player1Submitted as boolean) ?? false,
     player2Submitted: (s.player2Submitted as boolean) ?? false,
+    yearOfMeeting: (s.yearOfMeeting as number) ?? 0,
   };
 }
 
@@ -41,6 +42,7 @@ function parseQuestionnaire(json: string): QuestionnaireData {
       howLong: o.howLong ?? "",
       howMet: o.howMet ?? "",
       whereMet: o.whereMet ?? "",
+      yearOfMeeting: o.yearOfMeeting != null ? Number(o.yearOfMeeting) : undefined,
     };
   } catch {
     return {

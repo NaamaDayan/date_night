@@ -19,14 +19,15 @@ export default function QuestionnairePage() {
     setLoading(true);
 
     const form = e.currentTarget;
-    const body: Record<string, string> = {};
+    const body: Record<string, string | number> = {};
     for (const field of QUESTIONNAIRE_FIELDS) {
       const el = form.elements.namedItem(field.name) as
         | HTMLInputElement
         | HTMLTextAreaElement
         | HTMLSelectElement
         | null;
-      body[field.name] = el?.value?.trim() ?? "";
+      const val = el?.value?.trim() ?? "";
+      body[field.name] = field.type === "number" ? (val ? Number(val) : "") : val;
     }
 
     try {
@@ -128,6 +129,18 @@ export default function QuestionnairePage() {
                     </option>
                   ))}
                 </select>
+              ) : field.type === "number" ? (
+                <input
+                  id={field.name}
+                  name={field.name}
+                  type="number"
+                  placeholder={field.placeholder}
+                  required={field.required}
+                  className="site-input"
+                  min={1900}
+                  max={2100}
+                  step={1}
+                />
               ) : (
                 <input
                   id={field.name}

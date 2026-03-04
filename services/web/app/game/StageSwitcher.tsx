@@ -2,7 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
-import { InterimScreen } from "./InterimScreen";
+import { MainProgressScreen, deriveLockStatesFromHistory } from "./MainProgressScreen";
+import { DummyStageView } from "./DummyStageView";
 import { StageWelcome } from "./shared/StageWelcome";
 import { TVLayout } from "./shared/TVLayout";
 import { PlayerLayout } from "./shared/PlayerLayout";
@@ -23,6 +24,9 @@ const Stage3TV = dynamic(() => import("./stages/3").then((m) => ({ default: m.TV
 const Stage4 = dynamic(() => import("./stages/4").then((m) => ({ default: m.Player1View })), { ssr: false });
 const Stage4P2 = dynamic(() => import("./stages/4").then((m) => ({ default: m.Player2View })), { ssr: false });
 const Stage4TV = dynamic(() => import("./stages/4").then((m) => ({ default: m.TVView })), { ssr: false });
+const Stage5 = dynamic(() => import("./stages/5").then((m) => ({ default: m.Player1View })), { ssr: false });
+const Stage5P2 = dynamic(() => import("./stages/5").then((m) => ({ default: m.Player2View })), { ssr: false });
+const Stage5TV = dynamic(() => import("./stages/5").then((m) => ({ default: m.TVView })), { ssr: false });
 
 const STAGE_WELCOME_CONFIG: Record<
   number,
@@ -36,26 +40,37 @@ const STAGE_WELCOME_CONFIG: Record<
     icon: "💬",
   },
   2: {
+    title: "שנת ההיכרות",
+    subtitle: "מצאו את המשפט המוסתר והזינו את המספר",
+    instructions:
+      "כל אחד רואה אותיות מסומנות שונות. חברו את המשפט והזינו את המספר הנכון.",
+    icon: "📅",
+  },
+  3: {
     title: "Sound Date Puzzle",
     subtitle: "הקשיבו, זכרו וסדרו את התאריך המיוחד",
     instructions:
       "לחצו על הכפתורים כדי לשמוע ספרות, ואז סדרו אותן בסדר הנכון.",
     icon: "🔊",
   },
-  3: {
+  4: {
     title: "Our Vision Board",
     subtitle: "בנו את החזון המשותף שלכם",
     instructions:
       "בחרו בין אפשרויות. כשאתם בוחרים אותו דבר — זה נכנס ל-Vision Board!",
     icon: "🌟",
   },
-  4: {
+  5: {
     title: "Zoom Map",
     subtitle: "תארו, נחשו וגלו את המיקום הסודי",
     instructions:
       "התחלפו בין תיאור וניחוש מילים. כל ניחוש נכון מקרב אתכם ליעד!",
     icon: "🗺️",
   },
+  6: { title: "Memory", subtitle: "Dummy stage", instructions: "For testing.", icon: "🔒" },
+  7: { title: "Memory", subtitle: "Dummy stage", instructions: "For testing.", icon: "🔒" },
+  8: { title: "Memory", subtitle: "Dummy stage", instructions: "For testing.", icon: "🔒" },
+  9: { title: "Memory", subtitle: "Dummy stage", instructions: "For testing.", icon: "🔒" },
 };
 
 interface Props {
@@ -85,8 +100,28 @@ export function StageSwitcher({ state, room, role, questionnaire, gameHistory }:
     }
   }, [state.stagePayloadJson]);
 
+  const progressLockStates = useMemo(
+    () => deriveLockStatesFromHistory(gameHistory, 9),
+    [gameHistory]
+  );
+
   if (phase === "INTERIM_SCREEN") {
-    return <InterimScreen state={state} room={room} role={role === "tv" ? "tv" : role} />;
+    const effectiveRole = role === "tv" ? "tv" : role;
+    return (
+      <div style={{ position: "relative", minHeight: "100dvh", width: "100%" }}>
+        <MainProgressScreen
+          lockStates={progressLockStates}
+          currentStageIndex={stageIndex}
+          onNavigateToStage={() => {
+            // Colyseus: server already set currentStageIndex when entering INTERIM.
+            // Sending "ready" starts that stage. For "requestStage" use: room.send("requestStage", index);
+            room.send("ready");
+          }}
+          room={room}
+          role={effectiveRole}
+        />
+      </div>
+    );
   }
 
   if (phase === "ENDED" || stageIndex >= STAGE_ENDED) {
@@ -159,6 +194,20 @@ export function StageSwitcher({ state, room, role, questionnaire, gameHistory }:
   if (stageIndex === 4) {
     if (isTV) return <Stage4TV state={state} />;
     return isP1 ? <Stage4 state={state} room={room} questionnaire={questionnaire} /> : <Stage4P2 state={state} room={room} questionnaire={questionnaire} />;
+  }
+  if (stageIndex === 5) {
+    if (isTV) return <Stage5TV state={state} />;
+    return isP1 ? <Stage5 state={state} room={room} questionnaire={questionnaire} /> : <Stage5P2 state={state} room={room} questionnaire={questionnaire} />;
+  }
+  if (stageIndex >= 6 && stageIndex <= 9) {
+    const effectiveRole = role === "tv" ? "tv" : role;
+    return (
+      <DummyStageView
+        stageNumber={stageIndex}
+        role={effectiveRole}
+        onBackToProgress={() => room.send("returnToProgress")}
+      />
+    );
   }
 
   return (

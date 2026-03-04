@@ -15,7 +15,7 @@
 const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("./IStage.js");
 const { ROLES } = require("../../shared/constants.js");
 
-const STAGE_INDEX = 2;
+const STAGE_INDEX = 3;
 
 const DEFAULT_MEETING_DATE_DIGITS = [2, 0, 0, 6, 2, 0, 1, 8];
 
@@ -120,7 +120,7 @@ function onMessage(room, client, type, data) {
   if (type === "continue") {
     if (!payload.stageComplete) return false;
     room.addToHistory(STAGE_INDEX, { status: "solved" });
-    room.advanceToInterim(3);
+    room.advanceToInterim(4);
     return true;
   }
 
@@ -128,7 +128,7 @@ function onMessage(room, client, type, data) {
 }
 
 function getInterimTitle() {
-  return "Get ready for Stage 3!";
+  return "Get ready for Stage 4!";
 }
 
 module.exports = {

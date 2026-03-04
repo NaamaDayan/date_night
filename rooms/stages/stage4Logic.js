@@ -10,7 +10,7 @@ const fs = require("fs");
 const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("./IStage.js");
 const { ROLES } = require("../../shared/constants.js");
 
-const STAGE_INDEX = 4;
+const STAGE_INDEX = 5;
 const MAX_SUB_ROUNDS = 6;
 const ZOOM_MIN = 0;
 const ZOOM_MAX = 6;
@@ -172,7 +172,7 @@ function onMessage(room, client, type, data) {
       setPayload(room.state, payload);
       setStageTexts(room.state, "You found it! Eiffel Tower!", "You found the location!", "You found the location!");
       room.addToHistory(STAGE_INDEX, { locationCorrect: true, zoomLevel: payload.zoomLevel });
-      room.advanceToInterim(5);
+      room.advanceToInterim(6);
       return true;
     }
     payload.lastLocationGuessWrong = true;
@@ -221,7 +221,7 @@ function onMessage(room, client, type, data) {
     const nextSub = (payload.subRoundIndex ?? 0) + 1;
     if (nextSub >= MAX_SUB_ROUNDS) {
       room.addToHistory(STAGE_INDEX, { zoomLevel: payload.zoomLevel, subRounds: MAX_SUB_ROUNDS });
-      room.advanceToInterim(5);
+      room.advanceToInterim(6);
       return true;
     }
     payload.subRoundIndex = nextSub;

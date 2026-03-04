@@ -8,6 +8,7 @@ const MOCK_QUESTIONNAIRE = {
   howLong: "1 year",
   howMet: "Online",
   whereMet: "At home",
+  yearOfMeeting: 2019,
 };
 
 /**

@@ -2,11 +2,13 @@
  * Stage registry. Add new stage files here.
  */
 const stage1 = require("./stage1Logic.js");
+const stage2Year = require("./stage2YearLogic.js");
 const stage2 = require("./stage2Logic.js");
 const stage3 = require("./stage3Logic.js");
 const stage4 = require("./stage4Logic.js");
+const { stage6, stage7, stage8, stage9 } = require("./dummyStageLogic.js");
 
-const STAGES = [stage1, stage2, stage3, stage4];
+const STAGES = [stage1, stage2Year, stage2, stage3, stage4, stage6, stage7, stage8, stage9];
 
 const GAME_STATE = {
   WAITING_FOR_START: "WAITING_FOR_START",

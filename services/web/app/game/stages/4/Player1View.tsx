@@ -1,21 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { parseStage4Payload } from "./types";
-import type { SyncedGameState } from "../../types";
-import type { QuestionnaireData } from "../../types";
-import { COPY } from "./copy";
-import { LocationGuessModal } from "./LocationGuessModal";
-import { LocationGuessToast } from "./LocationGuessToast";
+import type { SyncedGameState, QuestionnaireData } from "../../types";
 import { useGameTheme } from "../../shared/GameThemeProvider";
 import { PlayerLayout } from "../../shared/PlayerLayout";
-import {
-  RoleDescriber,
-  RoleGuesser,
-  AnsweringBlock,
-  GuessingBlock,
-  ResultBlockPhone,
-} from "./PhoneBlocks";
+import { Button } from "../../shared/Button";
+import { parseStage3Payload } from "./types";
+import { COPY } from "./copy";
 
 interface Props {
   state: SyncedGameState;
@@ -25,110 +15,155 @@ interface Props {
 
 export function Player1View({ state, room }: Props) {
   const theme = useGameTheme();
-  const payload = parseStage4Payload(state.stagePayloadJson);
-  const isDescriber = payload.describerRole === "player1";
-  const [locationModalOpen, setLocationModalOpen] = useState(false);
-  const [wrongToastDismissed, setWrongToastDismissed] = useState(false);
-  const [answers, setAnswers] = useState<number[]>([0, 0, 0, 0]);
+  const payload = parseStage3Payload(state.stagePayloadJson);
+  const status = payload.status || "intro";
+  const myAnswered = Boolean(payload.p1Answered);
+  const currentPrompt = payload.currentPrompt;
+  const options = currentPrompt?.options || [];
+  const mutualCount = payload.mutualCount ?? 0;
 
-  useEffect(() => {
-    setAnswers([0, 0, 0, 0]);
-  }, [payload.subRoundIndex, payload.phase]);
-
-  const phase = payload.phase || "describe";
-  const showWrongToast = Boolean(payload.lastLocationGuessWrong) && !wrongToastDismissed;
-  const showCorrectToast = Boolean(payload.locationCorrect);
-
-  const handleDescriberSubmit = () => room.send("describerSubmit", { answers });
-  const handleGuesserSubmit = (wordIndex: number) => room.send("guesserSubmit", { wordIndex });
-  const handleLocationSubmit = (text: string) => {
-    room.send("locationGuess", { text });
+  const handleChoice = (choiceId: string) => {
+    room.send("answer", { choiceId });
   };
 
   return (
-    <PlayerLayout stageTitle={COPY.introHeadline}>
-      {phase === "describe" && (
-        <>
-          {isDescriber ? <RoleDescriber /> : <RoleGuesser />}
-          {isDescriber && (
-            <AnsweringBlock
-              payload={payload}
-              answers={answers}
-              setAnswers={setAnswers}
-              onSubmit={handleDescriberSubmit}
-            />
-          )}
-          {!isDescriber && (
+    <PlayerLayout
+      stageTitle={COPY.phoneIntroTitle}
+      subtitle={
+        status === "asking" || status === "intro"
+          ? `${COPY.phoneQuestionIntro} (${mutualCount}/5 משותפים)`
+          : undefined
+      }
+    >
+      {(status === "asking" || status === "intro") && (
+        <div className="game-step-enter">
+          <p
+            style={{
+              fontSize: theme.typography.phoneTitle,
+              fontWeight: 700,
+              margin: "8px 0 20px",
+              color: theme.colors.text,
+              textAlign: "center",
+            }}
+          >
+            {currentPrompt?.question || ""}
+          </p>
+
+          {!myAnswered ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {options.map((opt) => (
+                <Button
+                  key={opt.id}
+                  onClick={() => handleChoice(opt.id)}
+                  style={{ width: "100%", minHeight: 52 }}
+                >
+                  {opt.label}
+                </Button>
+              ))}
+            </div>
+          ) : (
             <p
               style={{
-                color: theme.colors.textMuted,
                 fontSize: theme.typography.phoneCaption,
+                color: theme.colors.textMuted,
                 textAlign: "center",
                 marginTop: 16,
               }}
             >
-              ממתינים לבן/בת הזוג...
+              {COPY.phoneWaiting}
             </p>
           )}
-        </>
+        </div>
       )}
 
-      {phase === "guess" && isDescriber && (
-        <p
+      {status === "reveal" && (
+        <div className="game-step-enter" style={{ textAlign: "center" }}>
+          <p
+            style={{
+              fontSize: theme.typography.phoneTitle,
+              fontWeight: 700,
+              marginBottom: 16,
+              color: theme.colors.accent,
+            }}
+          >
+            {payload.tvReaction || COPY.tvRevealMatch}
+          </p>
+          <p
+            style={{
+              fontSize: theme.typography.phoneCaption,
+              color: theme.colors.textMuted,
+              marginBottom: 24,
+            }}
+          >
+            {mutualCount} / 5 משותפים
+          </p>
+          <Button
+            onClick={() => room.send("next")}
+            style={{ width: "100%", minHeight: 52 }}
+          >
+            {COPY.phoneNext}
+          </Button>
+        </div>
+      )}
+
+      {status === "generating" && (
+        <div
+          className="game-step-enter"
           style={{
-            color: theme.colors.textMuted,
-            fontSize: theme.typography.phoneCaption,
             textAlign: "center",
-            padding: 24,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "40dvh",
           }}
         >
-          ממתינים לניחוש...
+          <p
+            style={{
+              fontSize: theme.typography.phoneTitle,
+              fontWeight: 600,
+              color: theme.colors.text,
+            }}
+          >
+            {COPY.tvGenerating}
+          </p>
+          <div
+            className="game-dots-loading"
+            style={{ marginTop: 16, fontSize: 18, color: theme.colors.textMuted }}
+          >
+            <span>.</span>
+            <span>.</span>
+            <span>.</span>
+          </div>
+        </div>
+      )}
+
+      {status === "showResult" && (
+        <div className="game-step-enter" style={{ textAlign: "center" }}>
+          <p
+            style={{
+              fontSize: "clamp(18px, 5vw, 22px)",
+              fontWeight: 700,
+              marginBottom: 16,
+              color: theme.colors.text,
+            }}
+          >
+            {COPY.phoneResultTitle}
+          </p>
+          <Button
+            onClick={() => room.send("continue")}
+            style={{ width: "100%", minHeight: 52 }}
+          >
+            {COPY.phoneContinue}
+          </Button>
+        </div>
+      )}
+
+      {!["asking", "intro", "reveal", "generating", "showResult"].includes(status) && (
+        <p style={{ color: theme.colors.textMuted }}>
+          {state.player1Text || COPY.phoneIntroTitle}
         </p>
       )}
-      {phase === "guess" && !isDescriber && (
-        <GuessingBlock payload={payload} onSubmit={handleGuesserSubmit} />
-      )}
-
-      {phase === "result" && (
-        <ResultBlockPhone payload={payload} onNext={() => room.send("next")} />
-      )}
-
-      <LocationGuessToast
-        showWrong={showWrongToast}
-        showCorrect={showCorrectToast}
-        onDismissWrong={() => setWrongToastDismissed(true)}
-      />
-
-      <button
-        type="button"
-        onClick={() => {
-          setLocationModalOpen(true);
-          setWrongToastDismissed(false);
-        }}
-        className="game-btn-press"
-        style={{
-          position: "fixed",
-          bottom: "max(16px, env(safe-area-inset-bottom))",
-          right: "max(16px, env(safe-area-inset-right))",
-          padding: "12px 16px",
-          minHeight: 48,
-          fontSize: "clamp(13px, 3.5vw, 15px)",
-          borderRadius: 22,
-          border: `2px solid ${theme.colors.border}`,
-          background: theme.colors.surface,
-          color: theme.colors.text,
-          cursor: "pointer",
-          boxShadow: theme.shadows?.card,
-        }}
-      >
-        {COPY.locationGuessButton}
-      </button>
-
-      <LocationGuessModal
-        open={locationModalOpen}
-        onClose={() => setLocationModalOpen(false)}
-        onSubmit={handleLocationSubmit}
-      />
     </PlayerLayout>
   );
 }

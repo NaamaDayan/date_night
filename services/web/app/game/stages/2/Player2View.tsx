@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useState, useMemo } from "react";
+import { useState, useCallback } from "react";
 import type { SyncedGameState, QuestionnaireData } from "../../types";
 import { useGameTheme } from "../../shared/GameThemeProvider";
 import { PlayerLayout } from "../../shared/PlayerLayout";
 import { Button } from "../../shared/Button";
-import { parseStage2Payload } from "./types";
-import { COPY } from "./copy";
-import { DatePuzzleButtons } from "./DatePuzzleButtons";
+import { Input } from "../../shared/Input";
+import { Player2Text } from "./HighlightedText";
 
 interface Props {
   state: SyncedGameState;
@@ -15,88 +14,47 @@ interface Props {
   questionnaire: QuestionnaireData;
 }
 
-export function Player2View({ state, room }: Props) {
+const STAGE_TITLE = "שנת ההיכרות";
+const SUBTITLE = "מצאו את המשפט המוסתר והזינו את המספר.";
+const SUBMIT_LABEL = "שלח";
+
+export function Player2View({ state, room, questionnaire }: Props) {
   const theme = useGameTheme();
-  const payload = parseStage2Payload(state.stagePayloadJson);
-  const buttons = payload.buttons ?? [];
-  const isSolved = Boolean(payload.stageComplete || payload.status === "solved");
+  const [value, setValue] = useState("");
 
-  const [heardSet, setHeardSet] = useState<Set<number>>(new Set());
-  const discoveryDone = heardSet.size >= 8;
+  const handleSubmit = useCallback(() => {
+    const num = value.trim() ? Number(value.trim()) : NaN;
+    if (!Number.isInteger(num)) return;
+    room.send("submit", { number: num });
+  }, [value, room]);
 
-  const pressSequence = payload.pressSequence ?? [];
-  const usedIndices = useMemo(() => new Set(pressSequence), [pressSequence]);
-
-  const handlePress = useCallback(
-    (index: number) => {
-      if (!discoveryDone) {
-        setHeardSet((prev) => new Set(prev).add(index));
-        return;
-      }
-      room.send("press", { index });
-    },
-    [discoveryDone, room]
-  );
-
-  const handleReset = useCallback(() => {
-    room.send("reset");
-  }, [room]);
+  const headline = `${STAGE_TITLE} — ${questionnaire.partner1Name} & ${questionnaire.partner2Name}`;
 
   return (
-    <PlayerLayout
-      stageTitle={COPY.phoneTitle}
-      subtitle={!isSolved ? (discoveryDone ? COPY.orderIntro : COPY.discoverIntro) : undefined}
-    >
-      <div style={{ marginBottom: 20 }}>
-        <DatePuzzleButtons
-          buttons={buttons}
-          usedIndices={discoveryDone ? usedIndices : new Set()}
-          interactive={!isSolved}
-          onPress={handlePress}
+    <PlayerLayout stageTitle={headline} subtitle={SUBTITLE}>
+      <p
+        style={{
+          fontSize: theme.typography.phoneBody || 18,
+          lineHeight: 1.8,
+          marginBottom: 24,
+          color: theme.colors.text,
+        }}
+      >
+        <Player2Text />
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <Input
+          type="number"
+          placeholder="הזן מספר"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          min={0}
+          max={9999}
         />
-      </div>
-
-      {discoveryDone && !isSolved && (
-        <Button
-          variant="secondary"
-          onClick={handleReset}
-          style={{ width: "100%", marginBottom: 16, minHeight: 48 }}
-        >
-          {COPY.resetButton}
+        <Button onClick={handleSubmit} style={{ width: "100%", minHeight: 48 }}>
+          {SUBMIT_LABEL}
         </Button>
-      )}
-
-      {isSolved && (
-        <div className="game-step-enter" style={{ marginTop: 16 }}>
-          <p
-            style={{
-              fontSize: "clamp(18px, 5vw, 22px)",
-              fontWeight: 700,
-              marginBottom: 8,
-              color: theme.colors.success,
-              textAlign: "center",
-            }}
-          >
-            {COPY.resultsTitle}
-          </p>
-          <p
-            style={{
-              fontSize: theme.typography.phoneCaption,
-              marginBottom: 24,
-              color: theme.colors.textMuted,
-              textAlign: "center",
-            }}
-          >
-            {COPY.resultsSub}
-          </p>
-          <Button
-            onClick={() => room.send("continue")}
-            style={{ width: "100%", minHeight: 52 }}
-          >
-            {COPY.continueButton}
-          </Button>
-        </div>
-      )}
+      </div>
     </PlayerLayout>
   );
 }

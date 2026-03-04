@@ -4,23 +4,16 @@ import { useMemo } from "react";
 import type { SyncedGameState, QuestionnaireData } from "../../types";
 import { useGameTheme } from "../../shared/GameThemeProvider";
 import { TVLayout } from "../../shared/TVLayout";
-import { parseStage2Payload } from "./types";
-import { COPY } from "./copy";
-import { DatePuzzleButtons } from "./DatePuzzleButtons";
+import { TVText } from "./HighlightedText";
 
 interface Props {
   state: SyncedGameState;
 }
 
+const STAGE_TITLE = "שנת ההיכרות";
+
 export function TVView({ state }: Props) {
   const theme = useGameTheme();
-  const payload = parseStage2Payload(state.stagePayloadJson);
-  const buttons = payload.buttons ?? [];
-  const isSolved = Boolean(payload.stageComplete || payload.status === "solved");
-
-  const pressSequence = payload.pressSequence ?? [];
-  const usedIndices = useMemo(() => new Set(pressSequence), [pressSequence]);
-
   const questionnaire: QuestionnaireData = useMemo(() => {
     try {
       return (JSON.parse(state.questionnaireJson || "{}") as QuestionnaireData) || {
@@ -41,7 +34,7 @@ export function TVView({ state }: Props) {
     }
   }, [state.questionnaireJson]);
 
-  const headline = `${COPY.stageName} — ${questionnaire.partner1Name} & ${questionnaire.partner2Name}`;
+  const headline = `${STAGE_TITLE} — ${questionnaire.partner1Name} & ${questionnaire.partner2Name}`;
 
   return (
     <TVLayout stageNumber={2}>
@@ -50,45 +43,23 @@ export function TVView({ state }: Props) {
           style={{
             fontSize: theme.typography.tvTitle,
             margin: 0,
-            marginBottom: 8,
+            marginBottom: 24,
             color: theme.colors.text,
             fontWeight: 800,
           }}
         >
           {headline}
         </h1>
-        {!isSolved && (
-          <p
-            style={{
-              fontSize: theme.typography.tvBody,
-              margin: 0,
-              marginBottom: 24,
-              color: theme.colors.textMuted,
-            }}
-          >
-            {COPY.tvSubtitle}
-          </p>
-        )}
-        <div style={{ marginBottom: 24 }}>
-          <DatePuzzleButtons
-            buttons={buttons}
-            usedIndices={usedIndices}
-            interactive={false}
-          />
-        </div>
-        {isSolved && (
-          <p
-            className="game-step-enter game-text-glow"
-            style={{
-              fontSize: "clamp(24px, 4vw, 36px)",
-              fontWeight: 700,
-              margin: 0,
-              color: theme.colors.accent,
-            }}
-          >
-            {COPY.tvSolved}
-          </p>
-        )}
+        <p
+          style={{
+            fontSize: theme.typography.tvBody,
+            margin: 0,
+            lineHeight: 1.8,
+            color: theme.colors.text,
+          }}
+        >
+          <TVText />
+        </p>
       </div>
     </TVLayout>
   );

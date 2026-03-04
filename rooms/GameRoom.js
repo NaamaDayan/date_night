@@ -47,6 +47,7 @@ module.exports = class GameRoom extends Room {
         howLong: "1 year",
         howMet: "Online",
         whereMet: "At home",
+        yearOfMeeting: 2019,
       };
     }
     this.metadata = { sessionId: this.sessionId };
@@ -68,12 +69,26 @@ module.exports = class GameRoom extends Room {
     state.readyForNextCount = 0;
     state.player1Submitted = false;
     state.player2Submitted = false;
+    state.yearOfMeeting = this.questionnaire?.yearOfMeeting ?? 0;
     this.state = state;
 
     this.onMessage("*", (client, type, data) => {
       if (state.gameState === GAME_STATE.INTERIM_SCREEN) {
         if (type === "ready" || type === "startNext") {
           this.handleReadyForNext(client);
+        }
+        return;
+      }
+      if (state.gameState === GAME_STATE.IN_PROGRESS && type === "returnToProgress") {
+        const idx = state.currentStageIndex;
+        if (idx >= 6 && idx <= 9) {
+          this.addToHistory(idx, { dummy: true });
+          const next = idx + 1;
+          if (next > 9) {
+            this.advanceToEnd();
+          } else {
+            this.advanceToInterim(next);
+          }
         }
         return;
       }
@@ -98,6 +113,7 @@ module.exports = class GameRoom extends Room {
           howLong: "1 year",
           howMet: "Online",
           whereMet: "At home",
+          yearOfMeeting: 2019,
         };
         this.state.questionnaireJson = JSON.stringify(this.questionnaire);
       } else {

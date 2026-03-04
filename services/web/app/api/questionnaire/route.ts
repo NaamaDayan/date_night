@@ -10,13 +10,14 @@ export async function POST(request: NextRequest) {
     howLong?: string;
     howMet?: string;
     whereMet?: string;
+    yearOfMeeting?: number;
   };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  const { partner1Name, partner2Name, howLong, howMet, whereMet } = body;
+  const { partner1Name, partner2Name, howLong, howMet, whereMet, yearOfMeeting } = body;
   if (
     typeof partner1Name !== "string" ||
     typeof partner2Name !== "string" ||
@@ -26,6 +27,16 @@ export async function POST(request: NextRequest) {
   ) {
     return NextResponse.json(
       { error: "Missing or invalid questionnaire fields" },
+      { status: 400 }
+    );
+  }
+  const year =
+    yearOfMeeting != null && yearOfMeeting !== ""
+      ? Number(yearOfMeeting)
+      : NaN;
+  if (!Number.isInteger(year) || year < 1900 || year > 2100) {
+    return NextResponse.json(
+      { error: "Invalid year of meeting (use 1900–2100)" },
       { status: 400 }
     );
   }
@@ -46,6 +57,7 @@ export async function POST(request: NextRequest) {
       howLong: howLong.trim(),
       howMet: howMet.trim(),
       whereMet: whereMet.trim(),
+      yearOfMeeting: year,
     },
     createdAt: Date.now(),
     used: false,
