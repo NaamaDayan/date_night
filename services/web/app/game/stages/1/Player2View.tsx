@@ -7,6 +7,7 @@ import { PlayerLayout } from "../../shared/PlayerLayout";
 import { Button } from "../../shared/Button";
 import { Input } from "../../shared/Input";
 import { COPY } from "./copy";
+import { shared } from "../../copy/shared";
 import { parseStage1Payload } from "./types";
 import { GuessModal } from "./GuessModal";
 import { GuessToast } from "./GuessToast";
@@ -106,7 +107,7 @@ export function Player2View({ state, room, questionnaire }: Props) {
             </div>
           ) : (
             <p style={{ fontSize: theme.typography.phoneCaption, color: theme.colors.textMuted, textAlign: "center", marginTop: 8 }}>
-              ממתינים לבן/בת הזוג…
+              {shared.waitingForPartnerEllipsis}
             </p>
           )}
         </div>

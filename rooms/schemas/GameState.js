@@ -25,6 +25,8 @@ defineTypes(GameState, {
   player1Submitted: "boolean",
   player2Submitted: "boolean",
   yearOfMeeting: "number",
+  player1Name: "string",
+  player2Name: "string",
   // Legacy fields for backward compat (can be removed once client only uses new schema)
   stage: "number",
 });

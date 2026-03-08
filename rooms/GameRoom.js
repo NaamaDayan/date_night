@@ -3,6 +3,7 @@ const { GameState } = require("./schemas/GameState.js");
 const { validateToken, setSessionUsed } = require("../lib/session-validator.js");
 const { ROLES, MAX_CLIENTS_PER_ROOM } = require("../shared/constants.js");
 const { getStage, getStageCount, GAME_STATE } = require("./stages/index.js");
+const { SHARED } = require("./stages/sharedCopy.js");
 
 const STAGE_LOBBY = 0;
 const STAGE_ENDED_OFFSET = 1000;
@@ -42,8 +43,8 @@ module.exports = class GameRoom extends Room {
     this.questionnaire = options.questionnaire || null;
     if (this.devStage != null && (!this.questionnaire || !this.questionnaire.partner1Name)) {
       this.questionnaire = {
-        partner1Name: "Dev Partner 1",
-        partner2Name: "Dev Partner 2",
+        partner1Name: SHARED.devPartner1,
+        partner2Name: SHARED.devPartner2,
         howLong: "1 year",
         howMet: "Online",
         whereMet: "At home",
@@ -57,7 +58,7 @@ module.exports = class GameRoom extends Room {
     state.currentStageIndex = this.devStage != null ? this.devStage : STAGE_LOBBY;
     state.stage = state.currentStageIndex;
     state.gameState = this.devStage != null ? GAME_STATE.IN_PROGRESS : GAME_STATE.WAITING_FOR_START;
-    state.message = "Waiting for players...";
+    state.message = SHARED.waitingForPlayers;
     state.tvText = "";
     state.player1Text = "";
     state.player2Text = "";
@@ -70,25 +71,39 @@ module.exports = class GameRoom extends Room {
     state.player1Submitted = false;
     state.player2Submitted = false;
     state.yearOfMeeting = this.questionnaire?.yearOfMeeting ?? 0;
+    state.player1Name = this.questionnaire?.partner1Name ?? "";
+    state.player2Name = this.questionnaire?.partner2Name ?? "";
+    if (this.devStage == null) {
+      state.player1Name = "";
+      state.player2Name = "";
+    }
     this.state = state;
 
     this.onMessage("*", (client, type, data) => {
-      if (state.gameState === GAME_STATE.INTERIM_SCREEN) {
-        if (type === "ready" || type === "startNext") {
-          this.handleReadyForNext(client);
+      if (state.gameState === GAME_STATE.NAME_ENTRY && type === "submitName") {
+        const role = client.userData?.role;
+        const name = typeof data?.name === "string" ? data.name.trim().slice(0, 50) : "";
+        if (name && role === ROLES.PLAYER1) {
+          state.player1Name = name;
+        }
+        if (name && role === ROLES.PLAYER2) {
+          state.player2Name = name;
+        }
+        if (state.player1Name && state.player2Name) {
+          state.gameState = GAME_STATE.INTERIM_SCREEN;
+          state.message = SHARED.getReadyStage1;
+          state.currentStageIndex = 1;
+          state.stage = 1;
+          state.tvText = state.message;
+          state.player1Text = SHARED.tapStartNextStage;
+          state.player2Text = SHARED.tapStartNextStage;
+          state.readyForNextCount = 0;
         }
         return;
       }
-      if (state.gameState === GAME_STATE.IN_PROGRESS && type === "returnToProgress") {
-        const idx = state.currentStageIndex;
-        if (idx >= 6 && idx <= 9) {
-          this.addToHistory(idx, { dummy: true });
-          const next = idx + 1;
-          if (next > 9) {
-            this.advanceToEnd();
-          } else {
-            this.advanceToInterim(next);
-          }
+      if (state.gameState === GAME_STATE.INTERIM_SCREEN) {
+        if (type === "ready" || type === "startNext") {
+          this.handleReadyForNext(client);
         }
         return;
       }
@@ -108,8 +123,8 @@ module.exports = class GameRoom extends Room {
     if (this.devStage != null && this.state.gameState === GAME_STATE.WAITING_FOR_START) {
       if (!this.questionnaire || !this.questionnaire.partner1Name) {
         this.questionnaire = {
-          partner1Name: "Dev Partner 1",
-          partner2Name: "Dev Partner 2",
+          partner1Name: SHARED.devPartner1,
+          partner2Name: SHARED.devPartner2,
           howLong: "1 year",
           howMet: "Online",
           whereMet: "At home",
@@ -126,11 +141,13 @@ module.exports = class GameRoom extends Room {
     }
     if (this.state.gameState === GAME_STATE.WAITING_FOR_START && playerCount === 2) {
       this.state.gameStarted = true;
-      this.state.gameState = GAME_STATE.INTERIM_SCREEN;
-      this.state.message = "Get ready for Stage 1!";
+      this.state.gameState = GAME_STATE.NAME_ENTRY;
+      this.state.message = SHARED.nameEntryPrompt || "Enter your name";
+      this.state.tvText = SHARED.nameEntryWaiting || "Waiting for players to enter their names...";
+      this.state.player1Text = SHARED.nameEntryPrompt || "Enter your name";
+      this.state.player2Text = SHARED.nameEntryPrompt || "Enter your name";
       this.state.currentStageIndex = 1;
       this.state.stage = 1;
-      this.state.readyForNextCount = 0;
     }
   }
 
@@ -168,10 +185,10 @@ module.exports = class GameRoom extends Room {
     });
     this.state.gameState = GAME_STATE.INTERIM_SCREEN;
     const nextStage = getStage(nextStageIndex);
-    this.state.message = nextStage && nextStage.getInterimTitle ? nextStage.getInterimTitle() : "Get ready for the next stage!";
+    this.state.message = nextStage && nextStage.getInterimTitle ? nextStage.getInterimTitle() : SHARED.getReadyNextStage;
     this.state.tvText = this.state.message;
-    this.state.player1Text = "Tap 'Start Next Stage' when ready.";
-    this.state.player2Text = "Tap 'Start Next Stage' when ready.";
+    this.state.player1Text = SHARED.tapStartNextStage;
+    this.state.player2Text = SHARED.tapStartNextStage;
     this.state.readyForNextCount = 0;
     this.state.currentStageIndex = nextStageIndex;
     this.state.stage = nextStageIndex;
@@ -203,7 +220,7 @@ module.exports = class GameRoom extends Room {
     this.state.gameState = GAME_STATE.ENDED;
     this.state.currentStageIndex = STAGE_ENDED_OFFSET;
     this.state.stage = STAGE_ENDED_OFFSET;
-    this.state.message = "You won the game!";
+    this.state.message = SHARED.youWonTheGame;
     this.state.tvText = this.state.message;
     this.state.player1Text = this.state.message;
     this.state.player2Text = this.state.message;

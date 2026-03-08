@@ -12,8 +12,10 @@
  *   - No per-press feedback (no wrong message, no counter).
  */
 
-const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("./IStage.js");
-const { ROLES } = require("../../shared/constants.js");
+const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("../IStage.js");
+const { ROLES } = require("../../../shared/constants.js");
+const { applyTemplate } = require("../sharedCopy.js");
+const COPY = require("./copy.js");
 
 const STAGE_INDEX = 3;
 
@@ -45,24 +47,18 @@ function isSequenceCorrect(buttons, pressSequence, targetDigits) {
 
 function applyTextsForPhase(room, state, payload) {
   const q = getQuestionnaire(room);
-  const displayName = "Sound Date Puzzle";
+  const title = applyTemplate(COPY.titleTemplate, {
+    displayName: COPY.displayName,
+    partner1: q.partner1Name,
+    partner2: q.partner2Name,
+  });
 
   if (payload.status === "solved" || payload.stageComplete) {
-    setStageTexts(
-      state,
-      `${displayName} — ${q.partner1Name} & ${q.partner2Name}`,
-      "כל הכבוד! פתרתם את הפאזל.",
-      "כל הכבוד! פתרתם את הפאזל."
-    );
+    setStageTexts(state, title, COPY.solvedMessage, COPY.solvedMessage);
     return;
   }
 
-  setStageTexts(
-    state,
-    `${displayName} — ${q.partner1Name} & ${q.partner2Name}`,
-    "הקשיבו לכפתורים ולחצו בסדר הנכון.",
-    "הקשיבו לכפתורים ולחצו בסדר הנכון."
-  );
+  setStageTexts(state, title, COPY.instruction, COPY.instruction);
 }
 
 function startPlaying(room, state, payload) {
@@ -102,7 +98,6 @@ function onMessage(room, client, type, data) {
         payload.status = "solved";
         payload.stageComplete = true;
       }
-      // Wrong sequence: do nothing, user must press "reset" to try again
     }
 
     setPayload(room.state, payload);
@@ -128,7 +123,7 @@ function onMessage(room, client, type, data) {
 }
 
 function getInterimTitle() {
-  return "Get ready for Stage 4!";
+  return COPY.getReadyStage4;
 }
 
 module.exports = {

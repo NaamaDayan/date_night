@@ -30,6 +30,8 @@ function parseState(s: Record<string, unknown>): SyncedGameState {
     player1Submitted: (s.player1Submitted as boolean) ?? false,
     player2Submitted: (s.player2Submitted as boolean) ?? false,
     yearOfMeeting: (s.yearOfMeeting as number) ?? 0,
+    player1Name: (s.player1Name as string) ?? "",
+    player2Name: (s.player2Name as string) ?? "",
   };
 }
 

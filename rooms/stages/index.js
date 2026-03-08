@@ -1,17 +1,18 @@
 /**
- * Stage registry. Add new stage files here.
+ * Stage registry. Each stage lives in its own folder (1–6).
  */
-const stage1 = require("./stage1Logic.js");
-const stage2Year = require("./stage2YearLogic.js");
-const stage2 = require("./stage2Logic.js");
-const stage3 = require("./stage3Logic.js");
-const stage4 = require("./stage4Logic.js");
-const { stage6, stage7, stage8, stage9 } = require("./dummyStageLogic.js");
+const stage1 = require("./1");
+const stage2 = require("./2");
+const stage3 = require("./3");
+const stage4 = require("./4");
+const stage5 = require("./5");
+const stage6 = require("./6");
 
-const STAGES = [stage1, stage2Year, stage2, stage3, stage4, stage6, stage7, stage8, stage9];
+const STAGES = [stage1, stage2, stage3, stage4, stage5, stage6];
 
 const GAME_STATE = {
   WAITING_FOR_START: "WAITING_FOR_START",
+  NAME_ENTRY: "NAME_ENTRY",
   IN_PROGRESS: "IN_PROGRESS",
   INTERIM_SCREEN: "INTERIM_SCREEN",
   ENDED: "ENDED",

@@ -1,28 +1,27 @@
 /**
- * Stage 3: Vision Board
+ * Stage 4: Vision Board
  *
  * Players answer either/or closed questions. When both choose the same option,
  * it's saved as a mutual vision. At 5 mutual picks, generate a Vision Board image
- * via OpenAI and display on TV, then advance to Stage 4.
- *
- * The shuffled prompt order is stored on room._stage3Prompts (server memory only).
- * Only the current prompt is synced to clients via stagePayloadJson.
+ * via OpenAI and display on TV, then advance to Stage 5.
  */
 
-const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("./IStage.js");
-const { ROLES } = require("../../shared/constants.js");
-const { PROMPTS, shuffleArray, getTvReaction } = require("./stage3PromptBank.js");
-const { generateVisionBoardImage } = require("./stage3GenerateImage.js");
+const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("../IStage.js");
+const { ROLES } = require("../../../shared/constants.js");
+const { SHARED } = require("../sharedCopy.js");
+const { PROMPTS, shuffleArray, getTvReaction } = require("./promptBank.js");
+const { generateVisionBoardImage } = require("./generateImage.js");
+const COPY = require("./copy.js");
 
 const STAGE_INDEX = 4;
-const STAGE_NAME = "Vision Board";
+const STAGE_NAME = COPY.stageName;
 const MUTUAL_PICKS_TARGET = 5;
 
 function getPrompts(room) {
-  if (!room._stage3Prompts || !room._stage3Prompts.length) {
-    room._stage3Prompts = shuffleArray(PROMPTS);
+  if (!room._stage4Prompts || !room._stage4Prompts.length) {
+    room._stage4Prompts = shuffleArray(PROMPTS);
   }
-  return room._stage3Prompts;
+  return room._stage4Prompts;
 }
 
 function getPromptAt(room, index) {
@@ -57,24 +56,24 @@ function applyTextsForPhase(room, state, payload) {
   if (status === "asking") {
     setStageTexts(
       state,
-      "Our Vision Board",
-      "Choose your answer below.",
-      "Choose your answer below."
+      COPY.tvTitle,
+      COPY.chooseAnswer,
+      COPY.chooseAnswer
     );
     return;
   }
 
   if (status === "reveal") {
-    setStageTexts(state, payload.tvReaction || "Reveal!", payload.tvReaction || "", payload.tvReaction || "");
+    setStageTexts(state, payload.tvReaction || COPY.reveal, payload.tvReaction || "", payload.tvReaction || "");
     return;
   }
 
   if (status === "generating") {
     setStageTexts(
       state,
-      payload.tvReaction || "Creating your vision board… ✨",
-      "Creating your vision board…",
-      "Creating your vision board…"
+      payload.tvReaction || COPY.creatingBoard,
+      COPY.creatingBoardPhone,
+      COPY.creatingBoardPhone
     );
     return;
   }
@@ -82,9 +81,9 @@ function applyTextsForPhase(room, state, payload) {
   if (status === "showResult") {
     setStageTexts(
       state,
-      "Our Vision Board",
-      "Tap Continue to go to the next stage.",
-      "Tap Continue to go to the next stage."
+      COPY.tvTitle,
+      COPY.tapContinue,
+      COPY.tapContinue
     );
     return;
   }
@@ -111,7 +110,7 @@ function startPlaying(room, state, payload) {
 }
 
 function onEnter(room, state) {
-  room._stage3Prompts = shuffleArray(PROMPTS);
+  room._stage4Prompts = shuffleArray(PROMPTS);
   const payload = addWelcomeState(buildPayload(room));
   setPayload(state, payload);
 }
@@ -170,14 +169,14 @@ function handleNext(room, state, payload) {
 
   if ((payload.mutualPicks || []).length >= MUTUAL_PICKS_TARGET) {
     payload.status = "generating";
-    payload.tvReaction = "Creating your vision board… ✨";
+    payload.tvReaction = COPY.creatingBoard;
     setPayload(state, payload);
-    setStageTexts(state, payload.tvReaction, "Creating your vision board…", "Creating your vision board…");
+    setStageTexts(state, payload.tvReaction, COPY.creatingBoardPhone, COPY.creatingBoardPhone);
 
     const q = getQuestionnaire(room);
     generateVisionBoardImage({
-      partner1Name: q.partner1Name || "Partner 1",
-      partner2Name: q.partner2Name || "Partner 2",
+      partner1Name: q.partner1Name || SHARED.defaultPartner1,
+      partner2Name: q.partner2Name || SHARED.defaultPartner2,
       mutualPicks: payload.mutualPicks || [],
     })
       .then(({ url, error }) => {
@@ -248,7 +247,7 @@ function onMessage(room, client, type, data) {
 }
 
 function getInterimTitle() {
-  return "Get ready for Stage 5!";
+  return COPY.getReadyStage5;
 }
 
 module.exports = {

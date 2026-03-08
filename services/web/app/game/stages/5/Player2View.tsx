@@ -5,6 +5,7 @@ import { parseStage4Payload } from "./types";
 import type { SyncedGameState } from "../../types";
 import type { QuestionnaireData } from "../../types";
 import { COPY } from "./copy";
+import { shared } from "../../copy/shared";
 import { LocationGuessModal } from "./LocationGuessModal";
 import { LocationGuessToast } from "./LocationGuessToast";
 import { useGameTheme } from "../../shared/GameThemeProvider";
@@ -67,7 +68,7 @@ export function Player2View({ state, room }: Props) {
                 marginTop: 16,
               }}
             >
-              ממתינים לבן/בת הזוג...
+              {shared.waitingForPartnerEllipsis}
             </p>
           )}
         </>
@@ -82,7 +83,7 @@ export function Player2View({ state, room }: Props) {
             padding: 24,
           }}
         >
-          ממתינים לניחוש...
+          {COPY.waitingForGuessEllipsis}
         </p>
       )}
       {phase === "guess" && !isDescriber && (

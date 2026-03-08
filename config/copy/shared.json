@@ -1,0 +1,20 @@
+{
+  "waitingForPartner": "ממתינים לבן / בת הזוג",
+  "waitingForPartnerEllipsis": "ממתינים לבן / בת הזוג...",
+  "greatWaitPartner": "מעולה! חכו לבן/בת הזוג",
+  "partnerLabel": "בן / בת הזוג",
+  "defaultPartner1": "Partner 1",
+  "defaultPartner2": "Partner 2",
+  "devPartner1": "Dev Partner 1",
+  "devPartner2": "Dev Partner 2",
+  "waitingForPlayers": "Waiting for players...",
+  "nameEntryPrompt": "הזן את השם שלך",
+  "nameEntryPlaceholder": "השם שלי",
+  "nameEntrySubmit": "המשך",
+  "nameEntryWaiting": "מחכים לשחקנים להזין את השמות...",
+  "getReadyStage1": "Get ready for Stage 1!",
+  "getReadyNextStage": "Get ready for the next stage!",
+  "tapStartNextStage": "Tap 'Start Next Stage' when ready.",
+  "youWonTheGame": "You won the game!",
+  "bothReady": "שניכם מוכנים, מתחילים..."
+}

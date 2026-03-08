@@ -1,0 +1,18 @@
+{
+  "stageName": "Sound Date Puzzle",
+  "displayName": "Sound Date Puzzle",
+  "titleTemplate": "{{displayName}} — {{partner1}} & {{partner2}}",
+  "solvedMessage": "כל הכבוד! פתרתם את הפאזל.",
+  "instruction": "הקשיבו לכפתורים ולחצו בסדר הנכון.",
+  "getReadyStage4": "Get ready for Stage 4!",
+  "tvSubtitle": "הקשיבו לכפתורים ולחצו בסדר הנכון",
+  "tvSolved": "כל הכבוד! פתרתם את הפאזל 💛",
+  "phoneTitle": "Sound Date Puzzle",
+  "discoverIntro": "לחצו על כל הכפתורים כדי לשמוע את הספרות.",
+  "orderIntro": "עכשיו לחצו על הכפתורים בסדר הנכון של תאריך הפגישה.",
+  "buttonLabel": "🔊",
+  "resetButton": "איפוס",
+  "continueButton": "המשך",
+  "resultsTitle": "כל הכבוד! פתרתם את הפאזל 💛",
+  "resultsSub": "לחצו המשך להמשך"
+}

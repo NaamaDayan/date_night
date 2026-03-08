@@ -1,5 +1,5 @@
 /**
- * Stage 4: Zoom Map + Word Guessing
+ * Stage 5: Zoom Map + Word Guessing
  * - 6 sub-rounds, turn-based: Describer answers 4 MC questions about a secret word; Guesser sees answers + 4 word options.
  * - Correct guess → zoom in on TV map; incorrect → zoom out.
  * - Either player can type a location guess at any time; correct (Eiffel Tower) → stage ends, advance.
@@ -7,8 +7,10 @@
 
 const path = require("path");
 const fs = require("fs");
-const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("./IStage.js");
-const { ROLES } = require("../../shared/constants.js");
+const { setStageTexts, getQuestionnaire, setPayload, parsePayload, addWelcomeState, handleWelcomeReady } = require("../IStage.js");
+const { ROLES } = require("../../../shared/constants.js");
+const { applyTemplate } = require("../sharedCopy.js");
+const COPY = require("./copy.js");
 
 const STAGE_INDEX = 5;
 const MAX_SUB_ROUNDS = 6;
@@ -26,7 +28,7 @@ function loadWords() {
     wordsCache = JSON.parse(raw);
     return wordsCache;
   } catch (e) {
-    console.error("[stage4] Failed to load words.json", e.message);
+    console.error("[stage5] Failed to load words.json", e.message);
     return [];
   }
 }
@@ -68,44 +70,43 @@ function applyTextsForPhase(room, state, payload) {
   const phase = payload.phase || "describe";
   const describerRole = payload.describerRole || ROLES.PLAYER1;
   const zoomLevel = payload.zoomLevel ?? 0;
-
-  const describerInstruction = "Answer the 4 questions below (only you see the secret word).";
-  const guesserInstruction = "Your partner answered 4 questions. Pick the word they're describing.";
-  const resultInstruction = "Tap Next to continue to the next round.";
+  const round = (payload.subRoundIndex ?? 0) + 1;
+  const title = applyTemplate(COPY.titleTemplate, {
+    round,
+    maxRounds: MAX_SUB_ROUNDS,
+    zoom: zoomLevel,
+    zoomMax: ZOOM_MAX,
+  });
 
   if (phase === "describe") {
-    setStageTexts(
-      state,
-      `Zoom Map · Round ${(payload.subRoundIndex ?? 0) + 1}/${MAX_SUB_ROUNDS} · Zoom ${zoomLevel}/${ZOOM_MAX}`,
-      describerRole === ROLES.PLAYER1 ? describerInstruction : guesserInstruction,
-      describerRole === ROLES.PLAYER2 ? describerInstruction : guesserInstruction
-    );
+    const p1Text = describerRole === ROLES.PLAYER1 ? COPY.describerInstruction : COPY.guesserInstruction;
+    const p2Text = describerRole === ROLES.PLAYER2 ? COPY.describerInstruction : COPY.guesserInstruction;
+    setStageTexts(state, title, p1Text, p2Text);
     return;
   }
   if (phase === "guess") {
-    setStageTexts(
-      state,
-      `Zoom Map · Round ${(payload.subRoundIndex ?? 0) + 1}/${MAX_SUB_ROUNDS} · Zoom ${zoomLevel}/${ZOOM_MAX}`,
-      describerRole === ROLES.PLAYER1 ? "Waiting for your partner to guess..." : guesserInstruction,
-      describerRole === ROLES.PLAYER2 ? "Waiting for your partner to guess..." : guesserInstruction
-    );
+    const describerText = COPY.waitingForGuess;
+    const guesserText = COPY.guesserInstruction;
+    const p1Text = describerRole === ROLES.PLAYER1 ? describerText : guesserText;
+    const p2Text = describerRole === ROLES.PLAYER2 ? describerText : guesserText;
+    setStageTexts(state, title, p1Text, p2Text);
     return;
   }
   if (phase === "result") {
-    const msg = payload.result === "correct" ? "Correct! Zooming in." : "Wrong word. Zooming out.";
-    setStageTexts(
-      state,
-      `Zoom Map · ${msg} (Zoom ${payload.zoomLevel}/${ZOOM_MAX})`,
-      resultInstruction,
-      resultInstruction
-    );
+    const msg = payload.result === "correct" ? COPY.resultTitleCorrect : COPY.resultTitleWrong;
+    const resultTitle = applyTemplate(COPY.resultTitleTemplate, {
+      msg,
+      zoom: payload.zoomLevel,
+      zoomMax: ZOOM_MAX,
+    });
+    setStageTexts(state, resultTitle, COPY.resultInstruction, COPY.resultInstruction);
   }
 }
 
 function startSubRound(room, state, payload) {
   const wordEntry = pickRandomWord();
   if (!wordEntry) {
-    state.tvText = "Error: No words loaded.";
+    state.tvText = COPY.noWordsError;
     return;
   }
   const wordOptions = buildWordOptions(wordEntry);
@@ -162,7 +163,6 @@ function onMessage(room, client, type, data) {
 
   if (payload.stageComplete || payload.locationCorrect) return false;
 
-  // Location guess: allowed anytime
   if (type === "locationGuess" || type === "location") {
     payload.lastLocationGuessWrong = false;
     const text = (data && data.text !== undefined) ? data.text : (data && data.guess !== undefined) ? data.guess : "";
@@ -170,7 +170,7 @@ function onMessage(room, client, type, data) {
       payload.stageComplete = true;
       payload.locationCorrect = true;
       setPayload(room.state, payload);
-      setStageTexts(room.state, "You found it! Eiffel Tower!", "You found the location!", "You found the location!");
+      setStageTexts(room.state, COPY.foundLocationTv, COPY.foundLocationPhone, COPY.foundLocationPhone);
       room.addToHistory(STAGE_INDEX, { locationCorrect: true, zoomLevel: payload.zoomLevel });
       room.advanceToInterim(6);
       return true;
@@ -236,7 +236,7 @@ function onMessage(room, client, type, data) {
 }
 
 function getInterimTitle() {
-  return "Get ready for the next stage!";
+  return COPY.getReadyNext;
 }
 
 module.exports = {

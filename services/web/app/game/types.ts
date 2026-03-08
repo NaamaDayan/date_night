@@ -16,6 +16,7 @@ export interface GameHistoryItem {
 
 export type GameStatePhase =
   | "WAITING_FOR_START"
+  | "NAME_ENTRY"
   | "IN_PROGRESS"
   | "INTERIM_SCREEN"
   | "ENDED";
@@ -37,4 +38,6 @@ export interface SyncedGameState {
   player1Submitted: boolean;
   player2Submitted: boolean;
   yearOfMeeting: number;
+  player1Name?: string;
+  player2Name?: string;
 }

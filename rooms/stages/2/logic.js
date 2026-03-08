@@ -4,8 +4,10 @@
  * One correct submit advances all to next stage.
  */
 
-const { setStageTexts, getQuestionnaire, setPayload, parsePayload } = require("./IStage.js");
-const { ROLES } = require("../../shared/constants.js");
+const { setStageTexts, getQuestionnaire, setPayload, parsePayload } = require("../IStage.js");
+const { ROLES } = require("../../../shared/constants.js");
+const { applyTemplate } = require("../sharedCopy.js");
+const COPY = require("./copy.js");
 
 const STAGE_INDEX = 2;
 
@@ -18,7 +20,10 @@ function getNowHHMMAsNumber() {
 
 function onEnter(room, state) {
   const q = getQuestionnaire(room);
-  const title = `שנת ההיכרות — ${q.partner1Name} & ${q.partner2Name}`;
+  const title = applyTemplate(COPY.titleTemplate, {
+    partner1: q.partner1Name,
+    partner2: q.partner2Name,
+  });
   setStageTexts(state, title, title, title);
   setPayload(state, { stageComplete: false });
 }
@@ -48,7 +53,7 @@ function onMessage(room, client, type, data) {
 }
 
 function getInterimTitle() {
-  return "Get ready for Stage 3!";
+  return COPY.getReadyStage3;
 }
 
 module.exports = {

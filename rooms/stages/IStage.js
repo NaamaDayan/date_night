@@ -25,14 +25,16 @@ function setStageTexts(state, tvText, player1Text, player2Text) {
   state.player2Text = player2Text || "";
 }
 
+const { SHARED } = require("./sharedCopy.js");
+
 /**
  * @param {Room} room
  * @returns {QuestionnaireData}
  */
 function getQuestionnaire(room) {
   return room.questionnaire || {
-    partner1Name: "Partner 1",
-    partner2Name: "Partner 2",
+    partner1Name: SHARED.defaultPartner1,
+    partner2Name: SHARED.defaultPartner2,
     howLong: "",
     howMet: "",
     whereMet: "",

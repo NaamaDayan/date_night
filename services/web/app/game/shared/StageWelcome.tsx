@@ -4,6 +4,7 @@ import { useGameTheme } from "./GameThemeProvider";
 import { Button } from "./Button";
 import { TVLayout } from "./TVLayout";
 import { PlayerLayout } from "./PlayerLayout";
+import { shared } from "../copy/shared";
 
 interface StageWelcomeProps {
   stageNumber: number;
@@ -11,6 +12,7 @@ interface StageWelcomeProps {
   subtitle: string;
   instructions?: string;
   themeIcon?: string;
+  hideStageNumber?: boolean;
   isTV: boolean;
   isReady?: boolean;
   partnerReady?: boolean;
@@ -23,6 +25,7 @@ export function StageWelcome({
   subtitle,
   instructions,
   themeIcon,
+  hideStageNumber,
   isTV,
   isReady = false,
   partnerReady = false,
@@ -35,6 +38,7 @@ export function StageWelcome({
         stageTitle={stageTitle}
         subtitle={subtitle}
         themeIcon={themeIcon}
+        hideStageNumber={hideStageNumber}
       />
     );
   }
@@ -46,6 +50,7 @@ export function StageWelcome({
       subtitle={subtitle}
       instructions={instructions}
       themeIcon={themeIcon}
+      hideStageNumber={hideStageNumber}
       isReady={isReady}
       partnerReady={partnerReady}
       onReady={onReady}
@@ -58,11 +63,13 @@ function TVWelcome({
   stageTitle,
   subtitle,
   themeIcon,
+  hideStageNumber,
 }: {
   stageNumber: number;
   stageTitle: string;
   subtitle: string;
   themeIcon?: string;
+  hideStageNumber?: boolean;
 }) {
   const theme = useGameTheme();
 
@@ -93,19 +100,21 @@ function TVWelcome({
           className="game-welcome-enter game-welcome-enter-delay-1"
           style={{ textAlign: "center" }}
         >
-          <p
-            style={{
-              fontSize: "clamp(14px, 2vw, 18px)",
-              fontWeight: 600,
-              color: theme.colors.primary,
-              margin: 0,
-              marginBottom: 8,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-            }}
-          >
-            Stage {stageNumber}
-          </p>
+          {!hideStageNumber && (
+            <p
+              style={{
+                fontSize: "clamp(14px, 2vw, 18px)",
+                fontWeight: 600,
+                color: theme.colors.primary,
+                margin: 0,
+                marginBottom: 8,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              Stage {stageNumber}
+            </p>
+          )}
           <h1
             className="game-text-glow"
             style={{
@@ -158,6 +167,7 @@ function PlayerWelcome({
   subtitle,
   instructions,
   themeIcon,
+  hideStageNumber,
   isReady,
   partnerReady,
   onReady,
@@ -167,6 +177,7 @@ function PlayerWelcome({
   subtitle: string;
   instructions?: string;
   themeIcon?: string;
+  hideStageNumber?: boolean;
   isReady: boolean;
   partnerReady: boolean;
   onReady?: () => void;
@@ -213,8 +224,8 @@ function PlayerWelcome({
         }}
       >
         {partnerReady
-          ? "שניכם מוכנים, מתחילים..."
-          : "ממתינים לבן/בת הזוג..."}
+          ? shared.bothReady
+          : shared.waitingForPartnerEllipsis}
       </p>
     </div>
   );
@@ -242,19 +253,21 @@ function PlayerWelcome({
           </span>
         )}
 
-        <p
-          className="game-welcome-enter game-welcome-enter-delay-1"
-          style={{
-            fontSize: "clamp(12px, 3.5vw, 14px)",
-            fontWeight: 600,
-            color: theme.colors.primary,
-            margin: 0,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-          }}
-        >
-          Stage {stageNumber}
-        </p>
+        {!hideStageNumber && (
+          <p
+            className="game-welcome-enter game-welcome-enter-delay-1"
+            style={{
+              fontSize: "clamp(12px, 3.5vw, 14px)",
+              fontWeight: 600,
+              color: theme.colors.primary,
+              margin: 0,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            Stage {stageNumber}
+          </p>
+        )}
 
         <h1
           className="game-welcome-enter game-welcome-enter-delay-1"

@@ -22,41 +22,18 @@ const {
   parsePayload,
   addWelcomeState,
   handleWelcomeReady,
-} = require("./IStage.js");
-const { ROLES } = require("../../shared/constants.js");
+} = require("../IStage.js");
+const { ROLES } = require("../../../shared/constants.js");
+const { applyTemplate, SHARED } = require("../sharedCopy.js");
+const COPY = require("./copy.js");
 
 const STAGE_INDEX = 1;
 const BLUR_MIN = 0; // perfectly clear
 const BLUR_MAX = 6; // maximum blur
 
-// Closed-source question list lives only on the server.
-// Questions are phrased so answers "Me" / partner-name make sense.
-const QUESTIONS = [
-  "Who drinks more coffee?",
-  "Who is more likely to be late?",
-  "Who sends more memes during the day?",
-  "Who falls asleep faster on the couch?",
-  "Who is more of a morning person?",
-  "Who takes longer to get ready to go out?",
-  "Who usually starts the arguments?",
-  "Who apologizes first after a fight?",
-  "Who plans the date nights more often?",
-  "Who remembers important dates better?",
-  "Who is more stubborn?",
-  "Who is more likely to suggest ordering takeout?",
-  "Who gets hangry more quickly?",
-  "Who is more romantic on a daily basis?",
-  "Who scrolls on their phone more in bed?",
-  "Who is more adventurous with new foods?",
-  "Who talks more during a movie?",
-  "Who is more likely to forget where they parked?",
-  "Who sings louder in the car?",
-  "Who is more likely to plan a surprise?",
-];
+const QUESTIONS = COPY.questions;
 
 const TARGET_IMAGE_ANSWER = "eiffel tower"; // primary hidden phrase; server-side only
-
-// Additional accepted variants (normalized, lowercase, spaces collapsed)
 const TARGET_IMAGE_VARIANTS = [
   "eiffel",
   "eiffel tower",
@@ -76,16 +53,9 @@ function normalizeGuess(text) {
 function isGuessCorrect(text) {
   const n = normalizeGuess(text);
   if (!n) return false;
-
-  // Direct match on primary answer
   if (n === TARGET_IMAGE_ANSWER) return true;
-
-  // Match any variant exactly
   if (TARGET_IMAGE_VARIANTS.includes(n)) return true;
-
-  // Also accept if the normalized text contains the primary phrase
   if (n.includes(TARGET_IMAGE_ANSWER)) return true;
-
   return false;
 }
 
@@ -97,7 +67,6 @@ function clampBlur(value) {
 }
 
 function mapChoiceToPerson(role, choice) {
-  // "me" = myself, "partner" = the other player
   if (choice !== "me" && choice !== "partner") return null;
   if (role === ROLES.PLAYER1) {
     return choice === "me" ? ROLES.PLAYER1 : ROLES.PLAYER2;
@@ -145,31 +114,31 @@ function applyTextsForPhase(room, state, payload) {
   const blurLevel = clampBlur(payload.blurLevel);
   const matches = payload.totalMatches || 0;
   const asked = payload.questionsAsked || 0;
+  const title = applyTemplate(COPY.tvTitleTemplate, {
+    partner1: q.partner1Name,
+    partner2: q.partner2Name,
+  });
 
   if (payload.phase === "finalPrompt") {
-    setStageTexts(
-      state,
-      `He Said · She Said — ${q.partner1Name} & ${q.partner2Name}`,
-      "התמונה כמעט ברורה. כתבו מה לדעתכם מופיע בה.",
-      "התמונה כמעט ברורה. כתבו מה לדעתכם מופיע בה.",
-    );
+    setStageTexts(state, title, COPY.finalPromptPhone, COPY.finalPromptPhone);
     return;
   }
 
   if (payload.phase === "results") {
-    const baseTitle = `He Said · She Said — ${q.partner1Name} & ${q.partner2Name}`;
-    const stats = `Matches: ${matches}/${asked || 1} · Blur: ${blurLevel}/${BLUR_MAX}`;
-    setStageTexts(state, `${baseTitle}`, stats, stats);
+    const stats = applyTemplate(COPY.resultsStatsTemplate, {
+      matches,
+      asked: asked || 1,
+      blur: blurLevel,
+      blurMax: BLUR_MAX,
+    });
+    setStageTexts(state, title, stats, stats);
     return;
   }
 
-  // Default: question phase
-  setStageTexts(
-    state,
-    `He Said · She Said — ${q.partner1Name} & ${q.partner2Name}`,
-    'ענו על השאלה בטלפון: "אני" או שם בן/בת הזוג.',
-    'ענו על השאלה בטלפון: "אני" או שם בן/בת הזוג.',
-  );
+  const questionInstruction = applyTemplate(COPY.questionInstructionTemplate, {
+    partnerLabel: SHARED.partnerLabel,
+  });
+  setStageTexts(state, title, questionInstruction, questionInstruction);
 }
 
 function startPlaying(room, state, payload) {
@@ -186,8 +155,6 @@ function handleAnswer(room, client, payload, data) {
   if (payload.phase !== "questions" || payload.stageComplete) return false;
   const role = client.userData?.role;
   if (role !== ROLES.PLAYER1 && role !== ROLES.PLAYER2) return false;
-
-  // Prevent double-answering the same question
   if (role === ROLES.PLAYER1 && payload.p1Answered) return true;
   if (role === ROLES.PLAYER2 && payload.p2Answered) return true;
 
@@ -203,7 +170,6 @@ function handleAnswer(room, client, payload, data) {
     payload.p2Answered = true;
   }
 
-  // Wait until both have answered this question
   if (!payload.p1Answered || !payload.p2Answered) {
     setPayload(room.state, payload);
     return true;
@@ -226,8 +192,6 @@ function handleAnswer(room, client, payload, data) {
   payload.blurLevel = blurLevel;
   payload.questionsAsked = (payload.questionsAsked || 0) + 1;
   payload.lastPairMatched = !!match;
-
-  // Reset per-question state for the next question
   payload.p1Choice = null;
   payload.p2Choice = null;
   payload.p1Answered = false;
@@ -269,7 +233,6 @@ function handleLiveGuess(room, client, payload, data) {
   const correct = isGuessCorrect(text);
 
   if (payload.phase === "finalPrompt") {
-    // Treat as final answers phase
     if (role === ROLES.PLAYER1 && !payload.finalAnswerPlayer1) {
       payload.finalAnswerPlayer1 = String(text);
     }
@@ -293,7 +256,6 @@ function handleLiveGuess(room, client, payload, data) {
       payload.finalAnswerPlayer1 &&
       payload.finalAnswerPlayer2
     ) {
-      // Both answered, no correct guess → end without a winner
       payload.stageComplete = true;
       payload.win = false;
       payload.winBy = "finalPrompt";
@@ -308,7 +270,6 @@ function handleLiveGuess(room, client, payload, data) {
     return true;
   }
 
-  // Live guess during question phase
   if (correct) {
     payload.stageComplete = true;
     payload.win = true;
@@ -353,7 +314,6 @@ function onMessage(room, client, type, data) {
   }
 
   if (type === "continue") {
-    // Results screen "Continue" – add to history and move to Stage 2
     const summary = {
       blurLevel: clampBlur(payload.blurLevel),
       totalMatches: payload.totalMatches || 0,
@@ -376,7 +336,7 @@ function onMessage(room, client, type, data) {
 }
 
 function getInterimTitle() {
-  return "Get ready for Stage 2!";
+  return COPY.getReadyStage2;
 }
 
 module.exports = {
