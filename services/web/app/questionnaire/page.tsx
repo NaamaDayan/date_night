@@ -19,8 +19,15 @@ export default function QuestionnairePage() {
     setLoading(true);
 
     const form = e.currentTarget;
-    const body: Record<string, string | number> = {};
+    const body: Record<string, string | number | string[]> = {};
     for (const field of QUESTIONNAIRE_FIELDS) {
+      if (field.type === "multiselect" && field.options) {
+        const checked = form.querySelectorAll<HTMLInputElement>(
+          `input[name="${field.name}"]:checked`
+        );
+        body[field.name] = Array.from(checked).map((el) => el.value);
+        continue;
+      }
       const el = form.elements.namedItem(field.name) as
         | HTMLInputElement
         | HTMLTextAreaElement
@@ -129,6 +136,31 @@ export default function QuestionnairePage() {
                     </option>
                   ))}
                 </select>
+              ) : field.type === "multiselect" && field.options ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {field.options.map((opt) => (
+                    <label
+                      key={opt}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        padding: "8px 12px",
+                        background: "var(--surface)",
+                        borderRadius: "var(--radius)",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        name={field.name}
+                        value={opt}
+                        className="site-input"
+                      />
+                      <span>{opt}</span>
+                    </label>
+                  ))}
+                </div>
               ) : field.type === "number" ? (
                 <input
                   id={field.name}

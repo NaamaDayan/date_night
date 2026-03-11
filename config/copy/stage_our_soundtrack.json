@@ -1,0 +1,17 @@
+{
+  "tvTitle": "Our Soundtrack",
+  "getReadyStage4": "Get ready for Stage 4!",
+  "conveyingInstruction": "Convey the song without saying the name, artist, or genre. Use pantomime, humming, or hints.",
+  "guessingInstruction": "Guess the song name",
+  "guessPlaceholder": "Enter song name...",
+  "skipSong": "Skip Song",
+  "nextGuess": "Next Guess",
+  "correctMessage": "Correct!",
+  "timeUpMessage": "time is up! next guess",
+  "wrongGuessMessage": "Wrong – try again",
+  "movingToNextStage": "Moving to the next stage",
+  "correctGuessesLabel": "Correct guesses",
+  "attemptsLabel": "Attempts",
+  "timerLabel": "Time left",
+  "submitGuess": "Submit guess"
+}

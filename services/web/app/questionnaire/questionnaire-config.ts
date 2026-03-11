@@ -8,11 +8,24 @@
  * If you add/remove fields, update the API route to match.
  */
 
+export const FAVORITE_GENRES_OPTIONS = [
+  "Rock",
+  "Classical",
+  "Disney",
+  "Middle Eastern",
+  "Mainstream",
+  "Pop",
+  "Jazz",
+  "Hip-Hop",
+] as const;
+
+export type FavoriteGenre = (typeof FAVORITE_GENRES_OPTIONS)[number];
+
 export interface QuestionField {
   name: string;
   label: string;
   placeholder: string;
-  type: "text" | "select" | "textarea" | "number";
+  type: "text" | "select" | "textarea" | "number" | "multiselect";
   required: boolean;
   icon: string;
   options?: string[];
@@ -66,6 +79,15 @@ export const QUESTIONNAIRE_FIELDS: QuestionField[] = [
     type: "number",
     required: true,
     icon: "📅",
+  },
+  {
+    name: "favoriteGenres",
+    label: "Favorite music genres (pick one or more)",
+    placeholder: "Select genres",
+    type: "multiselect",
+    required: false,
+    icon: "🎵",
+    options: [...FAVORITE_GENRES_OPTIONS],
   },
 ];
 

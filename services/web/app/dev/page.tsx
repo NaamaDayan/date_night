@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import stageOrderJson from "config/stageOrder.json";
+
 type Links = {
   stage: number;
   sessionId: string;
@@ -10,7 +12,8 @@ type Links = {
   tvLink: string;
 } | null;
 
-const STAGES = [1, 2, 3, 4, 5, 6];
+const STAGE_ORDER = stageOrderJson as string[];
+const STAGES = STAGE_ORDER.map((_, i) => i + 1);
 
 export default function DevPlayPage() {
   const [stage, setStage] = useState(6);

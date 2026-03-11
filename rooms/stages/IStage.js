@@ -2,7 +2,7 @@
  * Stage logic interface. Each stage module exports:
  * - stageIndex: number
  * - onEnter(room, state): called when stage becomes active; set state.tvText, player1Text, player2Text, stagePayloadJson as needed
- * - onMessage(room, client, type, data): handle message; return true if handled
+ * - onMessage(room, client, type, data, stageIndex): handle message; stageIndex is 1-based position; return true if handled
  * - getInterimTitle(room): optional; title for "Get Ready" screen before this stage
  *
  * Room provides: room.state, room.questionnaire, room.gameHistory, room.roles (ROLES)

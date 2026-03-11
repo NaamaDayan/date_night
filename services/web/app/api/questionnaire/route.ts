@@ -4,6 +4,7 @@ import { createSession, setEmailSent } from "@/lib/session-store";
 import { sendEmailMock } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
+  const GENRES = ["Rock", "Classical", "Disney", "Middle Eastern", "Mainstream", "Pop", "Jazz", "Hip-Hop"];
   let body: {
     partner1Name?: string;
     partner2Name?: string;
@@ -11,13 +12,14 @@ export async function POST(request: NextRequest) {
     howMet?: string;
     whereMet?: string;
     yearOfMeeting?: number;
+    favoriteGenres?: string[];
   };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  const { partner1Name, partner2Name, howLong, howMet, whereMet, yearOfMeeting } = body;
+  const { partner1Name, partner2Name, howLong, howMet, whereMet, yearOfMeeting, favoriteGenres } = body;
   if (
     typeof partner1Name !== "string" ||
     typeof partner2Name !== "string" ||
@@ -46,6 +48,11 @@ export async function POST(request: NextRequest) {
   const player2Token = nanoid(32);
   const tvToken = nanoid(32);
 
+  const genres =
+    Array.isArray(favoriteGenres) && favoriteGenres.length > 0
+      ? favoriteGenres.filter((g) => typeof g === "string" && GENRES.includes(g))
+      : GENRES.slice(0, 2);
+
   createSession({
     sessionId,
     player1Token,
@@ -58,6 +65,7 @@ export async function POST(request: NextRequest) {
       howMet: howMet.trim(),
       whereMet: whereMet.trim(),
       yearOfMeeting: year,
+      favoriteGenres: genres,
     },
     createdAt: Date.now(),
     used: false,

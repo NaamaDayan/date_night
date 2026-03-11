@@ -12,65 +12,61 @@ import type { QuestionnaireData } from "./types";
 import type { GameHistoryItem } from "./types";
 import type { Role } from "./types";
 
-const Stage1 = dynamic(() => import("./stages/1").then((m) => ({ default: m.Player1View })), { ssr: false });
-const Stage1P2 = dynamic(() => import("./stages/1").then((m) => ({ default: m.Player2View })), { ssr: false });
-const Stage1TV = dynamic(() => import("./stages/1").then((m) => ({ default: m.TVView })), { ssr: false });
-const Stage2 = dynamic(() => import("./stages/2").then((m) => ({ default: m.Player1View })), { ssr: false });
-const Stage2P2 = dynamic(() => import("./stages/2").then((m) => ({ default: m.Player2View })), { ssr: false });
-const Stage2TV = dynamic(() => import("./stages/2").then((m) => ({ default: m.TVView })), { ssr: false });
-const Stage3 = dynamic(() => import("./stages/3").then((m) => ({ default: m.Player1View })), { ssr: false });
-const Stage3P2 = dynamic(() => import("./stages/3").then((m) => ({ default: m.Player2View })), { ssr: false });
-const Stage3TV = dynamic(() => import("./stages/3").then((m) => ({ default: m.TVView })), { ssr: false });
-const Stage4 = dynamic(() => import("./stages/4").then((m) => ({ default: m.Player1View })), { ssr: false });
-const Stage4P2 = dynamic(() => import("./stages/4").then((m) => ({ default: m.Player2View })), { ssr: false });
-const Stage4TV = dynamic(() => import("./stages/4").then((m) => ({ default: m.TVView })), { ssr: false });
-const Stage5 = dynamic(() => import("./stages/5").then((m) => ({ default: m.Player1View })), { ssr: false });
-const Stage5P2 = dynamic(() => import("./stages/5").then((m) => ({ default: m.Player2View })), { ssr: false });
-const Stage5TV = dynamic(() => import("./stages/5").then((m) => ({ default: m.TVView })), { ssr: false });
-const Stage6 = dynamic(() => import("./stages/6").then((m) => ({ default: m.Player1View })), { ssr: false });
-const Stage6P2 = dynamic(() => import("./stages/6").then((m) => ({ default: m.Player2View })), { ssr: false });
-const Stage6TV = dynamic(() => import("./stages/6").then((m) => ({ default: m.TVView })), { ssr: false });
+import stageOrderJson from "config/stageOrder.json";
 
-const STAGE_WELCOME_CONFIG: Record<
-  number,
-  { title: string; subtitle: string; instructions?: string; icon: string; hideStageNumber?: boolean }
-> = {
-  1: {
+const STAGE_ORDER = stageOrderJson as string[];
+
+type WelcomeEntry = {
+  title: string;
+  subtitle: string;
+  instructions?: string;
+  icon: string;
+  hideStageNumber?: boolean;
+};
+
+const STAGE_WELCOME_BY_ID: Record<string, WelcomeEntry> = {
+  he_said_she_said: {
     title: "He Said · She Said",
     subtitle: "ענו יחד על שאלות כדי לחשוף את התמונה הנסתרת",
     instructions:
       "כל תשובה תואמת חושפת עוד חלק מהתמונה. נסו לנחש מה מסתתר!",
     icon: "💬",
   },
-  2: {
+  year_puzzle: {
     title: "שנת ההיכרות",
     subtitle: "מצאו את המשפט המוסתר והזינו את המספר",
     instructions:
       "כל אחד רואה אותיות מסומנות שונות. חברו את המשפט והזינו את המספר הנכון.",
     icon: "📅",
   },
-  3: {
+  sound_date: {
     title: "Sound Date Puzzle",
     subtitle: "הקשיבו, זכרו וסדרו את התאריך המיוחד",
     instructions:
       "לחצו על הכפתורים כדי לשמוע ספרות, ואז סדרו אותן בסדר הנכון.",
     icon: "🔊",
   },
-  4: {
+  vision_board: {
     title: "Our Vision Board",
     subtitle: "בנו את החזון המשותף שלכם",
     instructions:
       "בחרו בין אפשרויות. כשאתם בוחרים אותו דבר — זה נכנס ל-Vision Board!",
     icon: "🌟",
   },
-  5: {
+  zoom_map: {
     title: "Zoom Map",
     subtitle: "תארו, נחשו וגלו את המיקום הסודי",
     instructions:
       "התחלפו בין תיאור וניחוש מילים. כל ניחוש נכון מקרב אתכם ליעד!",
     icon: "🗺️",
   },
-  6: {
+  our_soundtrack: {
+    title: "Our Soundtrack",
+    subtitle: "",
+    instructions: undefined,
+    icon: "🎵",
+  },
+  our_experiences: {
     title: "Our experiences",
     subtitle: "קומו מהספה, הגיע הזמן לזוז קצת",
     instructions: undefined,
@@ -78,6 +74,27 @@ const STAGE_WELCOME_CONFIG: Record<
     hideStageNumber: true,
   },
 };
+
+const STAGE_WELCOME_CONFIG: Record<number, WelcomeEntry> = {};
+STAGE_ORDER.forEach((id, i) => {
+  const entry = STAGE_WELCOME_BY_ID[id];
+  if (entry) STAGE_WELCOME_CONFIG[i + 1] = entry;
+});
+
+const STAGE_COMPONENTS = STAGE_ORDER.map((id) => ({
+  P1: dynamic(
+    () => import("./stages/" + id).then((m) => ({ default: m.Player1View })),
+    { ssr: false }
+  ),
+  P2: dynamic(
+    () => import("./stages/" + id).then((m) => ({ default: m.Player2View })),
+    { ssr: false }
+  ),
+  TV: dynamic(
+    () => import("./stages/" + id).then((m) => ({ default: m.TVView })),
+    { ssr: false }
+  ),
+}));
 
 interface Props {
   state: SyncedGameState;
@@ -170,29 +187,18 @@ export function StageSwitcher({ state, room, role, questionnaire, gameHistory }:
   const isTV = role === "tv";
   const isP1 = role === "player1";
 
-  if (stageIndex === 1) {
-    if (isTV) return <Stage1TV state={state} />;
-    return isP1 ? <Stage1 state={state} room={room} questionnaire={questionnaire} /> : <Stage1P2 state={state} room={room} questionnaire={questionnaire} />;
-  }
-  if (stageIndex === 2) {
-    if (isTV) return <Stage2TV state={state} />;
-    return isP1 ? <Stage2 state={state} room={room} questionnaire={questionnaire} /> : <Stage2P2 state={state} room={room} questionnaire={questionnaire} />;
-  }
-  if (stageIndex === 3) {
-    if (isTV) return <Stage3TV state={state} />;
-    return isP1 ? <Stage3 state={state} room={room} questionnaire={questionnaire} /> : <Stage3P2 state={state} room={room} questionnaire={questionnaire} />;
-  }
-  if (stageIndex === 4) {
-    if (isTV) return <Stage4TV state={state} />;
-    return isP1 ? <Stage4 state={state} room={room} questionnaire={questionnaire} /> : <Stage4P2 state={state} room={room} questionnaire={questionnaire} />;
-  }
-  if (stageIndex === 5) {
-    if (isTV) return <Stage5TV state={state} />;
-    return isP1 ? <Stage5 state={state} room={room} questionnaire={questionnaire} /> : <Stage5P2 state={state} room={room} questionnaire={questionnaire} />;
-  }
-  if (stageIndex === 6) {
-    if (isTV) return <Stage6TV state={state} room={room} />;
-    return isP1 ? <Stage6 state={state} room={room} questionnaire={questionnaire} /> : <Stage6P2 state={state} room={room} questionnaire={questionnaire} />;
+  const idx = stageIndex >= 1 && stageIndex <= STAGE_COMPONENTS.length ? stageIndex - 1 : -1;
+  if (idx >= 0) {
+    const comp = STAGE_COMPONENTS[idx];
+    const StageP1 = comp.P1;
+    const StageP2 = comp.P2;
+    const StageTV = comp.TV;
+    if (isTV) return <StageTV state={state} room={room} />;
+    return isP1 ? (
+      <StageP1 state={state} room={room} questionnaire={questionnaire} />
+    ) : (
+      <StageP2 state={state} room={room} questionnaire={questionnaire} />
+    );
   }
 
   return (

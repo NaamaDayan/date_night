@@ -7,6 +7,7 @@ export interface QuestionnaireData {
   howMet: string;
   whereMet: string;
   yearOfMeeting?: number;
+  favoriteGenres?: string[];
 }
 
 export interface GameHistoryItem {

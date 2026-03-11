@@ -1,14 +1,16 @@
 /**
- * Stage registry. Each stage lives in its own folder (1–6).
+ * Stage registry. Each stage lives in its own folder (named by id).
+ * Order is defined in config/stageOrder.json.
  */
-const stage1 = require("./1");
-const stage2 = require("./2");
-const stage3 = require("./3");
-const stage4 = require("./4");
-const stage5 = require("./5");
-const stage6 = require("./6");
+const path = require("path");
 
-const STAGES = [stage1, stage2, stage3, stage4, stage5, stage6];
+const STAGE_ORDER_PATH = path.join(process.cwd(), "config", "stageOrder.json");
+const stageOrder = require(STAGE_ORDER_PATH);
+
+const STAGES = stageOrder.map((id, i) => {
+  const mod = require("./" + id);
+  return { ...mod, stageIndex: i + 1 };
+});
 
 const GAME_STATE = {
   WAITING_FOR_START: "WAITING_FOR_START",

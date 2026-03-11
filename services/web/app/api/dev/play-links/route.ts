@@ -9,6 +9,7 @@ const MOCK_QUESTIONNAIRE = {
   howMet: "Online",
   whereMet: "At home",
   yearOfMeeting: 2019,
+  favoriteGenres: ["Rock", "Disney"] as string[],
 };
 
 /**

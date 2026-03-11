@@ -49,6 +49,7 @@ module.exports = class GameRoom extends Room {
         howMet: "Online",
         whereMet: "At home",
         yearOfMeeting: 2019,
+        favoriteGenres: ["Rock", "Disney"],
       };
     }
     this.metadata = { sessionId: this.sessionId };
@@ -109,7 +110,7 @@ module.exports = class GameRoom extends Room {
       }
       if (state.gameState === GAME_STATE.IN_PROGRESS && state.currentStageIndex >= 1 && state.currentStageIndex <= getStageCount()) {
         const stageLogic = getStage(state.currentStageIndex);
-        if (stageLogic && stageLogic.onMessage(this, client, type, data)) {
+        if (stageLogic && stageLogic.onMessage(this, client, type, data, state.currentStageIndex)) {
           return;
         }
       }
@@ -129,6 +130,7 @@ module.exports = class GameRoom extends Room {
           howMet: "Online",
           whereMet: "At home",
           yearOfMeeting: 2019,
+          favoriteGenres: ["Rock", "Disney"],
         };
         this.state.questionnaireJson = JSON.stringify(this.questionnaire);
       } else {

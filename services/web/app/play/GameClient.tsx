@@ -45,6 +45,7 @@ function parseQuestionnaire(json: string): QuestionnaireData {
       howMet: o.howMet ?? "",
       whereMet: o.whereMet ?? "",
       yearOfMeeting: o.yearOfMeeting != null ? Number(o.yearOfMeeting) : undefined,
+      favoriteGenres: Array.isArray(o.favoriteGenres) ? o.favoriteGenres : undefined,
     };
   } catch {
     return {
