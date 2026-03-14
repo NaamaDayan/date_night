@@ -236,7 +236,8 @@ function onMessage(room, client, type, data, stageIndex) {
     if (role === ROLES.PLAYER2) payload.player2GameComplete = true;
     setPayload(room.state, payload);
     if (payload.player1GameComplete && payload.player2GameComplete) {
-      room.advanceToInterim(8);
+      // Advance past the last configured stage index so GameRoom moves to the end screen.
+      room.advanceToInterim(9);
     }
     return true;
   }

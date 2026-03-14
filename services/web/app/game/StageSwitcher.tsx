@@ -60,6 +60,13 @@ const STAGE_WELCOME_BY_ID: Record<string, WelcomeEntry> = {
       "התחלפו בין תיאור וניחוש מילים. כל ניחוש נכון מקרב אתכם ליעד!",
     icon: "🗺️",
   },
+  our_sync: {
+    title: "Our Sync",
+    subtitle: "תאמו תנועות יחד כדי לצייר את המסלול",
+    instructions:
+      "לכל אחד מכם יש חצים אחרים. אחד רואה את הכיוון, השני את המספר. עבדו יחד ותפסו את הקצב!",
+    icon: "🧭",
+  },
   our_soundtrack: {
     title: "Our Soundtrack",
     subtitle: "",

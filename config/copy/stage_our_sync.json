@@ -1,0 +1,16 @@
+{
+  "stageTitle": "Our Sync",
+  "stageSubtitle": "",
+  "successMessage": "מצוין, עוברים לשלב הבא",
+  "nextStepLabel": "הצעד הבא",
+  "questionInstruction": "בואו נראה עד כמה אתם מסונכרנים",
+  "notSyncedMessage": "Not synced this time :(",
+  "syncBoost": "Sync Boost",
+  "afterMismatchHint": "לחצו על החצים",
+  "initTvTitle": "Our Sync – follow the path together",
+  "initPlayerHint": "לחצו על החצים לפי ההוראות במסך",
+  "lockedTitle": "עכשיו מתחלפים",
+  "lockedSubtitle": "Switching roles...",
+  "lockedPhone": "עכשיו מתחלפים... חכו רגע 🙂",
+  "interimTitle": "Our Sync – Get ready to move together"
+}
